@@ -6,20 +6,26 @@ use rvec3::*;
 use color::*;
 use ray::*;
 
-pub fn hit_sphere(center : Point3, radius : f64, r : &mut Ray) -> bool {
+pub fn hit_sphere(center : Point3, radius : f64, r : &mut Ray) -> f64 {
     let oc : Rvec3 = r.origin() - center;
 
     let a = Rvec3::dot(&r.direction(), &r.direction());
     let b = 2.0 * Rvec3::dot(&oc, &r.direction());
     let c = Rvec3::dot(&oc, &oc) - radius*radius;
     let discriminant : f64 = b*b - 4.0*a*c;
-    discriminant >= 0.0
+    if discriminant < 0.0{
+        return -1.0;
+    }else{
+        return (-b - discriminant.sqrt())/ (2.0*a) ;
+    }
 }
 
-
 pub fn ray_color(r : &mut Ray) -> Color {
-    if hit_sphere(Point3::new_arg(0.0,0.0,-1.0),0.5,r){
-        return Color::new_arg(1.0,0.0,0.0);
+    let t =  hit_sphere(Point3::new_arg(0.0,0.0,-1.0),0.5,r);
+        
+    if t > 0.0{
+        let mut N = Rvec3::unit_vector(&mut (r.at(t) - Rvec3::new_arg(0.0,0.0,-1.0)));
+        return 0.5 * Color::new_arg(N.x()+1.0, N.y()+1.0, N.z() + 1.0);
     }
 
     let mut unit_direction = Rvec3::unit_vector(&mut r.direction());
