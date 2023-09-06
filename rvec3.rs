@@ -1,5 +1,7 @@
 
 use std::ops::*;
+// point3 is just an alias for vec3, but useful for geometric clarity in the code.
+pub type Point3 = Rvec3;
 
 #[derive(Copy,Clone)]
 pub struct Rvec3{
@@ -12,31 +14,36 @@ impl Rvec3{
             e : [0.0,0.0,0.0]
         }
     }
+    pub fn new_arg(x : f64, y:f64, z : f64) -> Rvec3{
+        Rvec3{
+            e : [x,y,z]
+        }
+    }
     pub fn init(&mut self, e0 : f64, e1 : f64, e2 : f64) {
         self.e[0] = e0;
         self.e[1] = e1;
         self.e[2] = e2;
     }
-    pub fn x(&mut self) -> f64{ return self.e[0];}
-    pub fn y(&mut self) -> f64{ return self.e[1];}
-    pub fn z(&mut self) -> f64{ return self.e[2];}
+    pub fn x(&mut self) -> f64{ self.e[0]}
+    pub fn y(&mut self) -> f64{ self.e[1]}
+    pub fn z(&mut self) -> f64{ self.e[2]}
 
     
     pub fn length_squared(&mut self) -> f64{
-        return self.e[0]*self.e[0] + self.e[1] *self.e[1] + self.e[2] *self.e[2];
+        self.e[0]*self.e[0] + self.e[1] *self.e[1] + self.e[2] *self.e[2]
     }
 
     pub fn length(&mut self) -> f64{
-        return self.length_squared().sqrt();
+        self.length_squared().sqrt()
     }
 
 
     pub fn dot(&u : &Rvec3, &v : &Rvec3) -> f64{
-        return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];
+        u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
     }
 
     pub fn unit_vector(&mut mut u : &mut Rvec3) -> Rvec3{
-        return u / u.length();
+        u / u.length()
     }
 
     pub fn cross(&u : &Rvec3, &v : &Rvec3) -> Rvec3{
@@ -47,6 +54,13 @@ impl Rvec3{
         }
     }
 }
+
+impl Default for Rvec3{
+    fn default() -> Self{
+        Self::new()
+    }
+}
+
 
 impl Neg for Rvec3{
     type Output = Self;
@@ -97,8 +111,6 @@ impl DivAssign<f64> for Rvec3 {
     }
 }
 
-// point3 is just an alias for vec3, but useful for geometric clarity in the code.
-type point3 = Rvec3;
 // Vector Utility Functions
 
 
