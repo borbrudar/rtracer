@@ -3,31 +3,20 @@ pub mod color;
 pub mod ray;
 pub mod hit;
 pub mod sphere;
+pub mod hitlist;
+pub mod utility;
 
 use rvec3::*;
 use color::*;
 use ray::*;
+use hit::*;
+use hitlist::*;
+use sphere::*;
 
-pub fn hit_sphere(center : Point3, radius : f64, r : &mut Ray) -> f64 {
-    let mut oc : Rvec3 = r.origin() - center;
-
-    let a = r.direction().length_squared();
-    let half_b = Rvec3::dot(&oc, &r.direction());
-    let c = oc.length_squared() - radius*radius;
-    let discriminant : f64 = half_b*half_b - a*c;
-    if discriminant < 0.0{
-        -1.0
-    }else{
-        (-half_b - discriminant.sqrt())/ a
-    }
-}
-
-pub fn ray_color(r : &mut Ray) -> Color {
-    let t =  hit_sphere(Point3::new_arg(0.0,0.0,-1.0),0.5,r);
-        
-    if t > 0.0{
-        let mut n = Rvec3::unit_vector(&mut (r.at(t) - Rvec3::new_arg(0.0,0.0,-1.0)));
-        return 0.5 * Color::new_arg(n.x()+1.0, n.y()+1.0, n.z() + 1.0);
+pub fn ray_color(r : &mut Ray, world : &mut HittableList ) -> Color {
+    let mut rec : HitRecord = HitRecord::new(); 
+    if world.hit(r, 0.0, f64::INFINITY, &mut rec){
+        return 0.5 * (rec.normal + Color::new_arg(1.0,1.0,1.0));
     }
 
     let mut unit_direction = Rvec3::unit_vector(&mut r.direction());
@@ -65,9 +54,12 @@ pub fn main(){
     let pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
     
+    //world
+    let mut world = HittableList::new();
+    world.add(Box::new(Sphere::new(Point3::new_arg(0.0,0.0,-1.0),0.5)));
+    world.add(Box::new(Sphere::new(Point3::new_arg(0.0,-100.5,-1.0),100.0)));
 
- // Render
-                             
+    // Render                         
     println!("P3\n{} {}\n255", &image_width,&image_height);
  
 
@@ -79,7 +71,7 @@ pub fn main(){
             let ray_direction = pixel_center - camera_center;
             let mut r : Ray = Ray::new_arg(camera_center,ray_direction);
 
-            let mut pixel_color = ray_color(&mut r);
+            let mut pixel_color = ray_color(&mut r,&mut world);
             write_color(&mut pixel_color);
         }
     }
