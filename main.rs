@@ -1,6 +1,8 @@
 pub mod rvec3;
 pub mod color;
 pub mod ray;
+pub mod hit;
+pub mod sphere;
 
 use rvec3::*;
 use color::*;
@@ -24,8 +26,8 @@ pub fn ray_color(r : &mut Ray) -> Color {
     let t =  hit_sphere(Point3::new_arg(0.0,0.0,-1.0),0.5,r);
         
     if t > 0.0{
-        let mut N = Rvec3::unit_vector(&mut (r.at(t) - Rvec3::new_arg(0.0,0.0,-1.0)));
-        return 0.5 * Color::new_arg(N.x()+1.0, N.y()+1.0, N.z() + 1.0);
+        let mut n = Rvec3::unit_vector(&mut (r.at(t) - Rvec3::new_arg(0.0,0.0,-1.0)));
+        return 0.5 * Color::new_arg(n.x()+1.0, n.y()+1.0, n.z() + 1.0);
     }
 
     let mut unit_direction = Rvec3::unit_vector(&mut r.direction());
