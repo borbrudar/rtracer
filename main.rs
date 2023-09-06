@@ -8,8 +8,10 @@ use ray::*;
 
 
 
-pub fn ray_color(_r : &Ray) -> Color {
-    Color::new()
+pub fn ray_color(r : &mut Ray) -> Color {
+    let mut unit_direction = Rvec3::unit_vector(&mut r.direction());
+    let a : f64 = 0.5*(unit_direction.y() + 1.0);
+    (1.0-a)*Color::new_arg(1.0,1.0,1.0) + a*Color::new_arg(0.5,0.7,1.0)
 }
 
 pub fn main(){
@@ -54,9 +56,9 @@ pub fn main(){
         for i in 0..image_width{
             let pixel_center : Point3 = pixel00_loc + ((i as f64) * pixel_delta_u) + ((j as f64)*pixel_delta_v);
             let ray_direction = pixel_center - camera_center;
-            let r : Ray = Ray::new_arg(camera_center,ray_direction);
+            let mut r : Ray = Ray::new_arg(camera_center,ray_direction);
 
-            let mut pixel_color = ray_color(&r);
+            let mut pixel_color = ray_color(&mut r);
             write_color(&mut pixel_color);
         }
     }

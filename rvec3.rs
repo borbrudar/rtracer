@@ -42,8 +42,8 @@ impl Rvec3{
         u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
     }
 
-    pub fn unit_vector(&mut mut u : &mut Rvec3) -> Rvec3{
-        u / u.length()
+    pub fn unit_vector(u : &mut Rvec3) -> Rvec3{
+        *u / u.length()
     }
 
     pub fn cross(&u : &Rvec3, &v : &Rvec3) -> Rvec3{
