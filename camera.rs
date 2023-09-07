@@ -12,6 +12,7 @@ pub struct Camera{
     pub aspect_ratio : f64,  // Ratio of image width over height
     pub image_width : i32,  // Rendered image width in pixel count
     pub samples_per_pixel : i32, // anti-aliasing
+    pub max_depth : i32, // max depth for recursion
 
     image_height : i32,   // Rendered image height
     camera_center : Point3,         // Camera center
@@ -32,6 +33,7 @@ impl Camera{
             aspect_ratio : 1.0,
             image_width : 100,
             samples_per_pixel : 10,
+            max_depth : 10,
             // made up
             image_height : 0,
             camera_center : Point3::new(),
@@ -54,7 +56,7 @@ impl Camera{
                 let mut pixel_color = Color::new_arg(0.0,0.0,0.0);
                 for sample in 0..self.samples_per_pixel {
                     let mut r = self.get_ray(i,j); 
-                    pixel_color += self.ray_color(&mut r,world);
+                    pixel_color += self.ray_color(&mut r, self.max_depth, world);
                 }
 
                 write_color(&mut pixel_color, self.samples_per_pixel);
@@ -108,11 +110,16 @@ impl Camera{
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.pixel_delta_u + self.pixel_delta_v);
     }
 
-    fn ray_color(&mut self,r : &mut Ray, world : &mut HittableList) -> Color {
+    fn ray_color(&mut self,r : &mut Ray, depth : i32, world : &mut HittableList) -> Color {
         let mut rec : HitRecord = HitRecord::new(); 
+
+        if depth <= 0 {
+            return Color::new();
+        }
+
         if world.hit(r, &mut Interval{min : 0.0, max : INFINITY} , &mut rec){
             let direction = Rvec3::random_on_hemisphere(&rec.normal);
-            return 0.5 * self.ray_color(&mut Ray::new_arg(rec.p, direction), world);
+            return 0.5 * self.ray_color(&mut Ray::new_arg(rec.p, direction), depth - 1,world);
         }
 
 
