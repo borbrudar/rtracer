@@ -2,6 +2,8 @@
 use std::ops::*;
 // point3 is just an alias for vec3, but useful for geometric clarity in the code.
 pub type Point3 = Rvec3;
+use crate::utility::*;
+
 
 #[derive(Copy,Clone)]
 pub struct Rvec3{
@@ -52,6 +54,35 @@ impl Rvec3{
             u.e[2] * v.e[0] - u.e[0] * v.e[2],
             u.e[0] * v.e[1] - u.e[1] * v.e[0]]
         }
+    }
+
+    pub fn random_vec() -> Rvec3 {
+        Rvec3{e : [random_double(), random_double(), random_double()]}
+    }
+
+    pub fn random_vec_range(min : f64, max : f64) -> Rvec3{
+        Rvec3{e : [random_range(min,max),random_range(min,max),random_range(min,max)]}
+    }
+
+    pub fn random_in_unit_sphere() -> Rvec3 {
+        loop{
+            let mut p = Rvec3::random_vec_range(-1.0,1.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_unit_vector() -> Rvec3{
+        Rvec3::unit_vector(&mut Rvec3::random_in_unit_sphere())
+    }
+
+    pub fn random_on_hemisphere(normal : &Rvec3) -> Rvec3{
+        let on_unit_sphere = Rvec3::random_unit_vector();
+        if Rvec3::dot(&on_unit_sphere,normal) > 0.0{
+            return on_unit_sphere;
+        }
+        -on_unit_sphere
     }
 }
 
