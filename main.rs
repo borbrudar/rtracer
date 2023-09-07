@@ -5,6 +5,7 @@ pub mod hit;
 pub mod sphere;
 pub mod hitlist;
 pub mod utility;
+pub mod interval;
 
 use rvec3::*;
 use color::*;
@@ -12,10 +13,12 @@ use ray::*;
 use hit::*;
 use hitlist::*;
 use sphere::*;
+use interval::*;
+use utility::*;
 
 pub fn ray_color(r : &mut Ray, world : &mut HittableList ) -> Color {
     let mut rec : HitRecord = HitRecord::new(); 
-    if world.hit(r, 0.0, f64::INFINITY, &mut rec){
+    if world.hit(r, &mut Interval{min : 0.0, max : INFINITY} , &mut rec){
         return 0.5 * (rec.normal + Color::new_arg(1.0,1.0,1.0));
     }
 
