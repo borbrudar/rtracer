@@ -5,10 +5,13 @@ use crate::rvec3::*;
 use crate::hit::*;
 use crate::hitlist::*;
 use crate::ray::*;
+use rand::distributions::{Distribution, Uniform};
+
 
 pub struct Camera{
     pub aspect_ratio : f64,  // Ratio of image width over height
     pub image_width : i32,  // Rendered image width in pixel count
+    pub samples_per_pixel : i32, // anti-aliasing
 
     image_height : i32,   // Rendered image height
     camera_center : Point3,         // Camera center
@@ -28,6 +31,7 @@ impl Camera{
         Self{
             aspect_ratio : 1.0,
             image_width : 100,
+            samples_per_pixel : 10,
             // made up
             image_height : 0,
             camera_center : Point3::new(),
@@ -47,16 +51,34 @@ impl Camera{
         for j in 0..self.image_height {
             eprintln!("\rScanlines remaining: {}", self.image_height-j); 
             for i in 0..self.image_width{
-                let pixel_center : Point3 = self.pixel00_loc + ((i as f64) * self.pixel_delta_u) + ((j as f64)*self.pixel_delta_v);
-                let ray_direction = pixel_center - self.camera_center;
-                let mut r : Ray = Ray::new_arg(self.camera_center,ray_direction);
-    
-                let mut pixel_color = self.ray_color(&mut r,world);
-                write_color(&mut pixel_color);
+                let mut pixel_color = Color::new_arg(0.0,0.0,0.0);
+                for sample in 0..self.samples_per_pixel {
+                    let mut r = self.get_ray(i,j); 
+                    pixel_color += self.ray_color(&mut r,world);
+                }
+
+                write_color(&mut pixel_color, self.samples_per_pixel);
             }
         }
-    
+
         eprintln!("\rDone");
+    }
+
+    fn get_ray(&mut self, i : i32, j : i32) -> Ray{
+        // Get a randomly sampled camera ray for the pixel at location i,j.
+        let pixel_center = self.pixel00_loc + ( (i as f64)* self.pixel_delta_u) + ((j as f64) * self.pixel_delta_v);
+        let pixel_sample = pixel_center + self.pixel_sample_square();
+
+        let ray_origin = self.camera_center;
+        let ray_direction = pixel_sample - ray_origin;
+
+        Ray::new_arg(ray_origin,ray_direction)
+    }
+
+    fn pixel_sample_square(&mut self) -> Rvec3{
+        let px = -0.5 + random_double();
+        let py = -0.5 + random_double();
+        (px * self.pixel_delta_u) + (py * self.pixel_delta_v)
     }
 
     fn initialize(&mut self){
