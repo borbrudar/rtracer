@@ -32,17 +32,15 @@ pub fn main(){
     //world
     let mut world = HittableList::new();
 
-    let material_ground = Rc::new(Box::new(Lambertian::new(Color::new_arg(0.8,0.8,0.0))));
-    let material_center = Rc::new(Box::new(Lambertian::new(Color::new_arg(0.7,0.3,0.3))));
-    let material_left = Rc::new(Box::new(Metal::new(Color::new_arg(0.8,0.8,0.8))));
-    let material_right = Rc::new(Box::new(Metal::new(Color::new_arg(0.8,0.6,0.2))));
+    let material_ground = Rc::new(Lambertian::new(Color::new_arg(0.8,0.8,0.0)));
+    //let material_center = Rc::new(Box::new(Lambertian::new(Color::new_arg(0.7,0.3,0.3))));
+    //let material_left = Rc::new(Box::new(Metal::new(Color::new_arg(0.8,0.8,0.8))));
+    //let material_right = Rc::new(Box::new(Metal::new(Color::new_arg(0.8,0.6,0.2))));
 
     world.add(Box::new(Sphere::new(Point3::new_arg( 0.0,-100.5,-1.0), 100.0, material_ground)));
-    world.add(Box::new(Sphere::new(Point3::new_arg( 0.0,   0.0,-1.0), 0.5, material_center)));
-    world.add(Box::new(Sphere::new(Point3::new_arg(-1.0,   0.0,-1.0), 0.5, material_left)));
-    world.add(Box::new(Sphere::new(Point3::new_arg( 1.0,   0.0,-1.0), 0.5, material_right)));
-
-    let a : Rc<Box<dyn Material>> = Rc::new(Box::new(Lambertian::new(Color::new())));
-
+    //world.add(Box::new(Sphere::new(Point3::new_arg( 0.0,   0.0,-1.0), 0.5, material_center)));
+    //world.add(Box::new(Sphere::new(Point3::new_arg(-1.0,   0.0,-1.0), 0.5, material_left)));
+    //world.add(Box::new(Sphere::new(Point3::new_arg( 1.0,   0.0,-1.0), 0.5, material_right)));
+    
     cam.render(&mut world);
 }

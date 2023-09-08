@@ -10,7 +10,7 @@ pub struct HitRecord{
     pub normal : Rvec3,
     pub t : f64,
     pub front_face : bool,
-    pub mat : Rc::<Box<dyn Material>>
+    pub mat : Rc<dyn Material>
 }
 
 impl HitRecord{
@@ -20,7 +20,7 @@ impl HitRecord{
             normal : Rvec3::new(),
             t : 0.0,
             front_face : false,
-            mat : Rc::<Box<dyn Material>>::new(Box::new(Lambertian::new(Color::new())))
+            mat : Rc::new(Lambertian::new(Color::new()))
         }
     }
 
