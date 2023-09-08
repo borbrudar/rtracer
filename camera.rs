@@ -69,7 +69,7 @@ impl Camera {
 
         // Render
         for j in 0..self.image_height {
-            eprintln!("\rScanlines remaining: {}", self.image_height - j);
+            //eprintln!("\rScanlines remaining: {}", self.image_height - j);
             for i in 0..self.image_width {
                 let mut pixel_color = Color::new_arg(0.0, 0.0, 0.0);
                 for _ in 0..self.samples_per_pixel {
