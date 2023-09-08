@@ -4,16 +4,17 @@ use crate::ray::*;
 use crate::interval::*;
 use crate::material::*;
 use std::rc::Rc;
+use std::cell::RefCell;
 
 pub struct Sphere {
     center : Point3,
     radius : f64,
-    mat : Rc<dyn Material>
+    mat : Rc<RefCell<dyn Material>>
 }
 
 
 impl Sphere{
-    pub fn new(cnt : Point3, rad : f64, mt : Rc<dyn Material>) -> Self{
+    pub fn new(cnt : Point3, rad : f64, mt : Rc<RefCell<dyn Material>>) -> Self{
         Self{
             center : cnt,
             radius : rad,
@@ -44,7 +45,7 @@ impl Hittable for Sphere{
         rec.t = root;
         rec.p = r.at(rec.t);
         rec.normal = (rec.p - self.center) / self.radius;
-        //rec.mat = Rc::new(self.mat);
+        rec.mat = self.mat;
 
         let mut outward_normal = rec.normal;
         rec.set_face_normal(r, &mut outward_normal);
