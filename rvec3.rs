@@ -1,4 +1,4 @@
-
+use std::num::*;
 use std::ops::*;
 // point3 is just an alias for vec3, but useful for geometric clarity in the code.
 pub type Point3 = Rvec3;
@@ -84,6 +84,17 @@ impl Rvec3{
         }
         -on_unit_sphere
     }
+
+    pub fn near_zero(&mut self) -> bool{
+        // Return true if the vector is close to zero in all dimensions.
+        let s = 1e-8; // 0.00000001
+        self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s
+    }
+
+
+    pub fn reflect(v : Rvec3, n : Rvec3) -> Rvec3{
+        v - 2.0*Rvec3::dot(&v,&n)*n
+    } 
 }
 
 impl Default for Rvec3{

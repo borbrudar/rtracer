@@ -2,18 +2,22 @@ use crate::hit::*;
 use crate::rvec3::*;
 use crate::ray::*;
 use crate::interval::*;
+use crate::material::*;
+use std::rc::Rc;
 
 pub struct Sphere {
     center : Point3,
-    radius : f64
+    radius : f64,
+    mat : Rc<Box<dyn Material>>
 }
 
 
 impl Sphere{
-    pub fn new(cnt : Point3, rad : f64) -> Self{
+    pub fn new(cnt : Point3, rad : f64, mt : Rc<Box<dyn Material>>) -> Self{
         Self{
             center : cnt,
-            radius : rad
+            radius : rad,
+            mat : mt
         }
     }
 }
@@ -40,6 +44,7 @@ impl Hittable for Sphere{
         rec.t = root;
         rec.p = r.at(rec.t);
         rec.normal = (rec.p - self.center) / self.radius;
+        rec.mat = self.mat;
 
         let mut outward_normal = rec.normal;
         rec.set_face_normal(r, &mut outward_normal);

@@ -6,6 +6,7 @@ use crate::hit::*;
 use crate::hitlist::*;
 use crate::ray::*;
 use rand::distributions::{Distribution, Uniform};
+use crate::material::*;
 
 
 pub struct Camera{
@@ -119,8 +120,16 @@ impl Camera{
 
         if world.hit(r, &mut Interval{min : 0.001, max : INFINITY} , &mut rec){
             //let direction = Rvec3::random_on_hemisphere(&rec.normal); // uniform random distribution
-            let direction = rec.normal + Rvec3::random_unit_vector(); // lambertian distribution
-            return 0.5 * self.ray_color(&mut Ray::new_arg(rec.p, direction), depth - 1,world);
+            //let direction = rec.normal + Rvec3::random_unit_vector(); // lambertian distribution
+            let scattered = Ray::new();
+            let attenuation = Color::new();
+
+
+        if rec.mat.scatter(&mut r,&mut rec, &mut attenuation,&mut scattered) {
+            return attenuation * self.ray_color(&mut scattered,depth-1,world);
+        }   
+
+            return Color::new();
         }
 
 

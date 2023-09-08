@@ -1,13 +1,16 @@
 use crate::rvec3::*;
 use crate::Ray;
 use crate::interval::*;
+use crate::material::*;
+use std::rc::Rc;
+use crate::color::*;
 
-#[derive(Copy,Clone)]
 pub struct HitRecord{
     pub p : Point3,
     pub normal : Rvec3,
     pub t : f64,
-    pub front_face : bool
+    pub front_face : bool,
+    pub mat : Rc::<Box<dyn Material>>
 }
 
 impl HitRecord{
@@ -16,7 +19,8 @@ impl HitRecord{
             p : Point3::new(),
             normal : Rvec3::new(),
             t : 0.0,
-            front_face : false
+            front_face : false,
+            mat : Rc::<Box<dyn Material>>::new(Box::new(Lambertian::new(Color::new())))
         }
     }
 

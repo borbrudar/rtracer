@@ -1,6 +1,5 @@
 use crate::utility::*;
 
-
 pub struct Interval{
     pub min : f64,
     pub max : f64
