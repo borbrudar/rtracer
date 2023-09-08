@@ -45,25 +45,65 @@ impl Camera{
 
     pub fn render(&mut self, world : &mut HittableList) {
         self.initialize();
-    
-        // Render                         
+
+        //setup sdl
+        let sdl_context = sdl2::init().unwrap();
+        let video_subsystem = sdl_context.video().unwrap();
+        let window = video_subsystem
+            .window(
+                "ray tracer",
+                self.image_width as u32,
+                self.image_height as u32,
+            )
+            .position_centered()
+            .build()
+            .unwrap();
+        let mut canvas = window.into_canvas().build().unwrap();
+        let mut event_pump = sdl_context.event_pump().unwrap(); //code above inits sdl2 somehow, idk what it does
+        canvas.set_draw_color(sdl2::pixels::Color::RGB(0, 0, 0));
+        canvas.clear();
+        canvas.present();
+
+
+
+        // Render
         println!("P3\n{} {}\n255", &self.image_width,&self.image_height);
-    
+
         // Render
         for j in 0..self.image_height {
-            eprintln!("\rScanlines remaining: {}", self.image_height-j); 
+            eprintln!("\rScanlines remaining: {}", self.image_height-j);
             for i in 0..self.image_width{
                 let mut pixel_color = Color::new_arg(0.0,0.0,0.0);
-                for sample in 0..self.samples_per_pixel {
-                    let mut r = self.get_ray(i,j); 
+                for _ in 0..self.samples_per_pixel {
+                    let mut r = self.get_ray(i,j);
                     pixel_color += self.ray_color(&mut r, self.max_depth, world);
                 }
 
-                write_color(&mut pixel_color, self.samples_per_pixel);
+                let color = calculate_true_color(&mut pixel_color, self.samples_per_pixel);
+                canvas.set_draw_color(
+                    sdl2::pixels::Color::RGB(color.x() as u8, color.y() as u8, color.z() as u8)
+                );
+                let _ = canvas.draw_point(
+                    sdl2::rect::Point::new(i, j)
+                );
+            }
+            canvas.present();
+            for event in event_pump.poll_iter() { //allows for quitting mid rendering
+                if let sdl2::event::Event::Quit { .. } = event {
+                    return;
+                }
             }
         }
 
         eprintln!("\rDone");
+
+        loop { //waits for quit after render
+            for event in event_pump.poll_iter() {
+                if let sdl2::event::Event::Quit { .. } = event {
+                    return;
+                }
+            }
+        }
     }
 
     fn get_ray(&mut self, i : i32, j : i32) -> Ray{
@@ -87,31 +127,31 @@ impl Camera{
         // Calculate the image height, and ensure that it's at least 1.
         self.image_height =  ((self.image_width as f64)/self.aspect_ratio) as i32;
         if self.image_height < 1 {self.image_height = 1;}
-        
-        
+
+
         // Camera
         let focal_length : f64 = 1.0;
         let viewport_height : f64 = 2.0;
         let viewport_width = viewport_height * ((self.image_width as f64)/(self.image_height as f64));
         self.camera_center = Point3::new();
-        
+
 
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
         let viewport_u = Rvec3::new_arg(viewport_width, 0.0, 0.0);
         let viewport_v = Rvec3::new_arg(0.0, -viewport_height, 0.0);
-        
-        
+
+
         // Calculate the horizontal and vertical delta vectors from pixel to pixel.
         self.pixel_delta_u = viewport_u / (self.image_width as f64);
         self.pixel_delta_v = viewport_v / (self.image_height as f64);
-        
+
         // Calculate the location of the upper left pixel.
-        let viewport_upper_left = self.camera_center- Rvec3::new_arg(0.0, 0.0, focal_length) - viewport_u/2.0 - viewport_v/2.0; 
+        let viewport_upper_left = self.camera_center- Rvec3::new_arg(0.0, 0.0, focal_length) - viewport_u/2.0 - viewport_v/2.0;
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.pixel_delta_u + self.pixel_delta_v);
     }
 
     fn ray_color(&mut self,r : &mut Ray, depth : i32, world : &mut HittableList) -> Color {
-        let mut rec : HitRecord = HitRecord::new(); 
+        let mut rec : HitRecord = HitRecord::new();
 
         if depth <= 0 {
             return Color::new();
@@ -125,7 +165,7 @@ impl Camera{
 
             if rec.mat.borrow_mut().scatter(r, &rec, &mut attenuation,&mut scattered) {
                 return attenuation * self.ray_color(&mut scattered,depth-1,world);
-            }   
+            }
 
             return Color::new_arg(0.0,0.0,0.0);
         }

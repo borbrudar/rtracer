@@ -26,11 +26,11 @@ impl Rvec3{
         self.e[1] = e1;
         self.e[2] = e2;
     }
-    pub fn x(&mut self) -> f64{ self.e[0]}
-    pub fn y(&mut self) -> f64{ self.e[1]}
-    pub fn z(&mut self) -> f64{ self.e[2]}
+    pub fn x(&self) -> f64{ self.e[0]}
+    pub fn y(&self) -> f64{ self.e[1]}
+    pub fn z(&self) -> f64{ self.e[2]}
 
-    
+
     pub fn length_squared(&mut self) -> f64{
         self.e[0]*self.e[0] + self.e[1] *self.e[1] + self.e[2] *self.e[2]
     }
@@ -50,9 +50,9 @@ impl Rvec3{
 
     pub fn cross(&u : &Rvec3, &v : &Rvec3) -> Rvec3{
         Rvec3{
-            e : [u.e[1] * v.e[2] - u.e[2] * v.e[1], 
-            u.e[2] * v.e[0] - u.e[0] * v.e[2],
-            u.e[0] * v.e[1] - u.e[1] * v.e[0]]
+            e : [u.e[1] * v.e[2] - u.e[2] * v.e[1],
+                u.e[2] * v.e[0] - u.e[0] * v.e[2],
+                u.e[0] * v.e[1] - u.e[1] * v.e[0]]
         }
     }
 
@@ -94,7 +94,7 @@ impl Rvec3{
 
     pub fn reflect(v : Rvec3, n : Rvec3) -> Rvec3{
         v - 2.0*Rvec3::dot(&v,&n)*n
-    } 
+    }
 }
 
 impl Default for Rvec3{
@@ -106,7 +106,7 @@ impl Default for Rvec3{
 
 impl Neg for Rvec3{
     type Output = Self;
-    
+
     fn neg(mut self) -> Self::Output{
         self.e[0] = -self.e[0];
         self.e[1] = -self.e[1];
@@ -198,8 +198,8 @@ impl Mul<f64> for Rvec3 {
     type Output = Self;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        Self { 
-            e: [self.e[0] * rhs,self.e[1] * rhs, self.e[2]*rhs] 
+        Self {
+            e: [self.e[0] * rhs,self.e[1] * rhs, self.e[2]*rhs]
         }
     }
 }
@@ -208,8 +208,8 @@ impl Mul<Rvec3> for f64 {
     type Output = Rvec3;
 
     fn mul(self, rhs: Rvec3) -> Rvec3 {
-        Rvec3 { 
-            e: [rhs.e[0] * self,rhs.e[1] * self, rhs.e[2]*self] 
+        Rvec3 {
+            e: [rhs.e[0] * self,rhs.e[1] * self, rhs.e[2]*self]
         }
     }
 }
