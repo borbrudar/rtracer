@@ -95,6 +95,13 @@ impl Rvec3{
     pub fn reflect(v : Rvec3, n : Rvec3) -> Rvec3{
         v - 2.0*Rvec3::dot(&v,&n)*n
     } 
+
+    pub fn refract(uv : &Rvec3, n : &Rvec3, etai_over_etat : f64) -> Rvec3{
+        let cos_theta = Rvec3::dot(&-*uv,n).min(1.0);
+        let mut r_out_perp = etai_over_etat * (*uv + cos_theta* *n);
+        let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * *n;
+        r_out_parallel + r_out_perp
+    }
 }
 
 impl Default for Rvec3{
