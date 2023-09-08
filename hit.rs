@@ -6,6 +6,7 @@ use std::rc::Rc;
 use crate::color::*;
 use std::cell::RefCell;
 
+
 pub struct HitRecord{
     pub p : Point3,
     pub normal : Rvec3,

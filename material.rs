@@ -3,10 +3,9 @@ use crate::ray::*;
 use crate::color::*;
 use crate::ray::*;
 use crate::rvec3::*;
-use std::ops::DerefMut;
 
 pub trait Material{
-    fn scatter(&mut self,r_in : &mut Ray, rec : &mut HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool;
+    fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool;
 }
 
 
@@ -23,7 +22,8 @@ impl Lambertian{
 }
 
 impl Material for Lambertian{
-    fn scatter(&mut self,r_in : &mut Ray, rec : &mut HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool{
+    fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool{
+        //eprintln!("lol");
         let mut scatter_direction = rec.normal + Rvec3::random_unit_vector();
         // Catch degenerate scatter direction
         if scatter_direction.near_zero() {
@@ -52,7 +52,8 @@ impl Metal{
 
   
 impl Material for Metal{
-    fn scatter(&mut self,r_in : &mut Ray, rec : &mut HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool{
+  fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool{
+        eprintln!("lol");
         let reflected = Rvec3::reflect(Rvec3::unit_vector(&mut r_in.direction()),rec.normal);
         *scattered = Ray::new_arg(rec.p,reflected);
         *attenuation = self.albedo;
