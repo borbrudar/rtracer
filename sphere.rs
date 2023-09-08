@@ -45,7 +45,7 @@ impl Hittable for Sphere{
         rec.t = root;
         rec.p = r.at(rec.t);
         rec.normal = (rec.p - self.center) / self.radius;
-        rec.mat = self.mat;
+        rec.mat = Rc::clone(&self.mat);
 
         let mut outward_normal = rec.normal;
         rec.set_face_normal(r, &mut outward_normal);
