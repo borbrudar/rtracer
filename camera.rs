@@ -175,9 +175,10 @@ impl Camera {
             let mut scattered = Ray::new();
             let mut attenuation = Color::new();
 
-            //if rec.mat.borrow_mut().scatter(r, &rec, &mut attenuation,&mut scattered) {
-            return attenuation * self.ray_color(&mut scattered, depth - 1, world);
-            //}
+            let temp_mat = rec.mat.clone();
+            if temp_mat.scatter(r, &rec, &mut attenuation, &mut scattered) {
+                return attenuation * self.ray_color(&mut scattered, depth - 1, world);
+            }
 
             return Color::new_arg(0.0, 0.0, 0.0);
         }

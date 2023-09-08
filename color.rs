@@ -30,11 +30,11 @@ pub fn calculate_true_color(pixel_color: &mut Color, samples_per_pixel: i32) -> 
             (256.0 * intensity.clamp(b)),
         ],
     };
-    println!(
+    /*println!(
         "{} {} {}",
         (256.0 * intensity.clamp(r)) as i32,
         (256.0 * intensity.clamp(g)) as i32,
         (256.0 * intensity.clamp(b)) as i32
-    );
+    );*/
     true_color
 }

@@ -6,7 +6,7 @@ use crate::rvec3::*;
 
 pub trait Material {
     fn scatter(
-        &mut self,
+        &self,
         r_in: &mut Ray,
         rec: &HitRecord,
         attenuation: &mut Color,
@@ -26,7 +26,7 @@ impl Lambertian {
 
 impl Material for Lambertian {
     fn scatter(
-        &mut self,
+        &self,
         r_in: &mut Ray,
         rec: &HitRecord,
         attenuation: &mut Color,
@@ -57,7 +57,7 @@ impl Metal {
 
 impl Material for Metal {
     fn scatter(
-        &mut self,
+        &self,
         r_in: &mut Ray,
         rec: &HitRecord,
         attenuation: &mut Color,
