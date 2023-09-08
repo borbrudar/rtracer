@@ -7,7 +7,7 @@ use crate::hitlist::*;
 use crate::ray::*;
 use rand::distributions::{Distribution, Uniform};
 use crate::material::*;
-
+use std::borrow::BorrowMut;
 
 pub struct Camera{
     pub aspect_ratio : f64,  // Ratio of image width over height
@@ -124,7 +124,7 @@ impl Camera{
             let mut scattered = Ray::new();
             let mut attenuation = Color::new();
 
-            if rec.mat.scatter(r, &mut rec, &mut attenuation,&mut scattered) {
+            if rec.mat.borrow().scatter(r, rec.borrow_mut(), &mut attenuation,&mut scattered) {
                 return attenuation * self.ray_color(&mut scattered,depth-1,world);
             }   
 
