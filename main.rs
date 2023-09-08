@@ -12,11 +12,11 @@ pub mod material;
 use rvec3::*;
 use color::*;
 use ray::*;
-use hit::*;
+
 use hitlist::*;
 use sphere::*;
-use interval::*;
-use utility::*;
+
+
 use camera::*;
 use material::*;
 use std::rc::Rc;

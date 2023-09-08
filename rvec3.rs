@@ -1,4 +1,4 @@
-use std::num::*;
+
 use std::ops::*;
 // point3 is just an alias for vec3, but useful for geometric clarity in the code.
 pub type Point3 = Rvec3;

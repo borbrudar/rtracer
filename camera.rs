@@ -5,7 +5,7 @@ use crate::rvec3::*;
 use crate::hit::*;
 use crate::hitlist::*;
 use crate::ray::*;
-use rand::distributions::{Distribution, Uniform};
+
 use crate::material::*;
 
 pub struct Camera{
@@ -54,7 +54,7 @@ impl Camera{
             eprintln!("\rScanlines remaining: {}", self.image_height-j); 
             for i in 0..self.image_width{
                 let mut pixel_color = Color::new_arg(0.0,0.0,0.0);
-                for sample in 0..self.samples_per_pixel {
+                for _sample in 0..self.samples_per_pixel {
                     let mut r = self.get_ray(i,j); 
                     pixel_color += self.ray_color(&mut r, self.max_depth, world);
                 }

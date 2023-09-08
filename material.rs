@@ -1,7 +1,7 @@
 use crate::hit::*;
 use crate::ray::*;
 use crate::color::*;
-use crate::ray::*;
+
 use crate::rvec3::*;
 
 pub trait Material{
@@ -22,7 +22,7 @@ impl Lambertian{
 }
 
 impl Material for Lambertian{
-    fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool{
+    fn scatter(&mut self,_r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool{
         let mut scatter_direction = rec.normal + Rvec3::random_unit_vector();
         // Catch degenerate scatter direction
         if scatter_direction.near_zero() {
