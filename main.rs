@@ -34,7 +34,11 @@ pub fn main(){
     cam.image_width  = 400;
     cam.samples_per_pixel = 20;
     cam.max_depth = 30;
-    cam.vfov = 70.0;
+    cam.vfov = 20.0;
+
+    cam.lookfrom = Point3::new_arg(-2.0,2.0,1.0);
+    cam.lookat   = Point3::new_arg(0.0,0.0,-1.0);
+    cam.vup      = Point3::new_arg(0.0,1.0,0.0);
 
     //world
     let mut world = HittableList::new();
