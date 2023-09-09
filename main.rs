@@ -24,15 +24,15 @@ use std::cell::RefCell;
 use std::env;
 
 pub fn main(){
-    env::set_var("RUST_BACKTRACE", "1");
+    //env::set_var("RUST_BACKTRACE", "1");
     let mut cam = Camera::new();
 
     //cam.image_width = 1600;
     //cam.samples_per_pixel = 70;
     //cam.max_depth = 500;
-    cam.image_width  = 1200;
-    cam.samples_per_pixel =10;
-    cam.max_depth = 20;
+    cam.image_width  = 400;
+    cam.samples_per_pixel =100;
+    cam.max_depth = 10;
     
     cam.vfov = 20.0;
     cam.aspect_ratio = 16.0 / 9.0;
@@ -57,13 +57,14 @@ pub fn main(){
             let center = Point3::new_arg((a as f64) + 0.9 * random_double(), 0.2 , (b as f64) + 0.9 * random_double());
 
             if (center - Point3::new_arg(4.0, 0.2, 0.0)).length() > 0.9 {
-                let mut sphere_material : Rc<RefCell<dyn Material>>;
+                let sphere_material : Rc<RefCell<dyn Material>>;
 
                 if choose_mat < 0.8 {
                     // diffuse
                     let albedo = Color::random_vec() * Color::random_vec();
                     sphere_material = Rc::new(RefCell::new(Lambertian::new(albedo)));
-                    world.add(Box::new(Sphere::new(center,0.2,sphere_material)));
+                    let center2 = center + Rvec3::new_arg(0.0, random_range(0.0,0.5), 0.0);
+                    world.add(Box::new(Sphere::new_movable(center,center2,0.2,sphere_material)));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::random_vec_range(0.5,1.0);

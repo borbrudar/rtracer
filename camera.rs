@@ -100,15 +100,19 @@ impl Camera{
         let pixel_center = self.pixel00_loc + ( (i as f64)* self.pixel_delta_u) + ((j as f64) * self.pixel_delta_v);
         let pixel_sample = pixel_center + self.pixel_sample_square();
 
-        let mut ray_origin = self.center;
+        let ray_origin = self.center;
+
+        // turn on defocus blur (ray_origin must be mut)
+        /*
         if self.defocus_angle > 0.0{
             ray_origin = self.defocus_disk_sample();
         }
+        */
+        
+        let ray_direction = Rvec3::unit_vector(&mut (pixel_sample - ray_origin));
+        let ray_time = random_double();
 
-
-        let ray_direction = pixel_sample - ray_origin;
-
-        Ray::new_arg(ray_origin,ray_direction)
+        Ray::new_time(ray_origin,ray_direction,ray_time)
     }
 
     fn pixel_sample_square(&mut self) -> Rvec3{
@@ -173,7 +177,7 @@ impl Camera{
             if rec.mat.borrow_mut().scatter(r, &rec, &mut attenuation,&mut scattered) {
                 return attenuation * self.ray_color(&mut scattered,depth-1,world);
             }   
-            return Color::new_arg(250.0,0.0,120.0);
+            return Color::new_arg(0.0,0.0,0.0);
         }
         
         let mut unit_direction = Rvec3::unit_vector(&mut r.direction());
