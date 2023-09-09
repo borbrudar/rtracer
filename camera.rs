@@ -13,6 +13,7 @@ pub struct Camera{
     pub image_width : i32,  // Rendered image width in pixel count
     pub samples_per_pixel : i32, // anti-aliasing
     pub max_depth : i32, // max depth for recursion
+    pub vfov : f64, //vertifcal field of view
 
     image_height : i32,   // Rendered image height
     camera_center : Point3,         // Camera center
@@ -34,6 +35,7 @@ impl Camera{
             image_width : 100,
             samples_per_pixel : 10,
             max_depth : 10,
+            vfov : 90.0, 
             // made up
             image_height : 0,
             camera_center : Point3::new(),
@@ -88,11 +90,16 @@ impl Camera{
         self.image_height =  ((self.image_width as f64)/self.aspect_ratio) as i32;
         if self.image_height < 1 {self.image_height = 1;}
         
-        
-        // Camera
+        // Determine viewport dimensions.
         let focal_length : f64 = 1.0;
-        let viewport_height : f64 = 2.0;
+        let theta = self.vfov.to_radians();
+        let h = (theta/2.0).tan();
+        let viewport_height = 2.0 * h * focal_length;
         let viewport_width = viewport_height * ((self.image_width as f64)/(self.image_height as f64));
+        
+
+
+
         self.camera_center = Point3::new();
         
 
