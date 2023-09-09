@@ -102,6 +102,15 @@ impl Rvec3{
         let r_out_parallel = -(1.0 - r_out_perp.length_squared()).abs().sqrt() * *n;
         r_out_parallel + r_out_perp
     }
+
+    pub fn random_in_unit_disk() -> Rvec3{
+        loop{
+            let mut p = Rvec3::new_arg(random_range(-1.0,1.0), random_range(-1.0, 1.0),0.0);
+            if p.length_squared() < 1.0{
+                return p;
+            }
+        }
+    }
 }
 
 impl Default for Rvec3{

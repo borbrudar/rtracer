@@ -27,15 +27,18 @@ pub fn main(){
     env::set_var("RUST_BACKTRACE", "1");
     let mut cam = Camera::new();
 
-    cam.aspect_ratio = 16.0 / 9.0;
     //cam.image_width = 1600;
     //cam.samples_per_pixel = 70;
     //cam.max_depth = 500;
     cam.image_width  = 400;
     cam.samples_per_pixel = 20;
     cam.max_depth = 30;
+    
     cam.vfov = 20.0;
-
+    cam.aspect_ratio = 16.0 / 9.0;
+    cam.defocus_angle = 10.0;
+    cam.focus_dist    = 3.4;
+    
     cam.lookfrom = Point3::new_arg(-2.0,2.0,1.0);
     cam.lookat   = Point3::new_arg(0.0,0.0,-1.0);
     cam.vup      = Point3::new_arg(0.0,1.0,0.0);
