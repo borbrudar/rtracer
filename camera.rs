@@ -123,14 +123,11 @@ impl Camera{
 
             let mut scattered = Ray::new();
             let mut attenuation = Color::new();
-
             if rec.mat.borrow_mut().scatter(r, &rec, &mut attenuation,&mut scattered) {
                 return attenuation * self.ray_color(&mut scattered,depth-1,world);
             }   
-
-            return Color::new_arg(0.0,0.0,0.0);
+            return Color::new_arg(250.0,0.0,120.0);
         }
-
         let mut unit_direction = Rvec3::unit_vector(&mut r.direction());
         let a : f64 = 0.5*(unit_direction.y() + 1.0);
         (1.0-a)*Color::new_arg(1.0,1.0,1.0) + a*Color::new_arg(0.5,0.7,1.0)

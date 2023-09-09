@@ -84,7 +84,7 @@ impl Dielectric{
 
 impl Material for Dielectric{
     fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool{
-        let attenuation = Color::new_arg(1.0,1.0,1.0);
+        *attenuation = Color::new_arg(1.0,1.0,1.0);
         let mut refraction_ratio = self.ir;
         if rec.front_face { refraction_ratio = 1.0/self.ir;}
 
@@ -93,7 +93,7 @@ impl Material for Dielectric{
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
  
         let cannot_refract = refraction_ratio * sin_theta > 1.0;
-        let mut direction : Rvec3;
+        let mut direction = Rvec3::new();
 
         if cannot_refract || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double() {
             direction = Rvec3::reflect(unit_direction,rec.normal);
