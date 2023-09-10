@@ -5,6 +5,7 @@ use crate::material::*;
 use std::rc::Rc;
 use crate::color::*;
 use std::cell::RefCell;
+use crate::aabb::AABB;
 
 pub struct HitRecord{
     pub p : Point3,
@@ -46,4 +47,5 @@ impl Default for HitRecord{
 
 pub trait Hittable{
     fn hit(&self, ray: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool;
+    fn bounding_box(&self) -> AABB;
 }

@@ -1,11 +1,13 @@
 use crate::utility::*;
 
+#[derive(Clone, Copy)]
 pub struct Interval{
     pub min : f64,
     pub max : f64
 }
 
 impl Interval{
+    // returns empty interval
     pub fn new() -> Self{
         Self{
             min : INFINITY,
@@ -16,6 +18,13 @@ impl Interval{
         Self{
             min : mn,
             max : mx
+        }
+    }
+
+    pub fn new_intervals(a : Interval, b : Interval) -> Self{
+        Self { 
+            min: a.min.min(b.min), 
+            max: a.max.max(b.max),
         }
     }
   
@@ -30,6 +39,11 @@ impl Interval{
         if x < self.min {return self.min;}
         if x > self.max {return self.max;}
         x
+    }
+
+    pub fn expand(&self,delta : f64) -> Interval{
+        let padding = delta/2.0;
+        Interval { min: self.min-padding, max: self.max+padding }
     }
 
     const empty : Interval = Interval{min : INFINITY, max : -INFINITY};

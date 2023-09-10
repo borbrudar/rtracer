@@ -8,6 +8,7 @@ pub mod utility;
 pub mod interval;
 pub mod camera;
 pub mod material;
+pub mod aabb;
 
 use rvec3::*;
 use color::*;

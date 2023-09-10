@@ -5,6 +5,7 @@ use crate::interval::*;
 use crate::material::*;
 use std::rc::Rc;
 use std::cell::RefCell;
+use crate::aabb::AABB;
 
 pub struct Sphere {
     center : Point3,
@@ -13,26 +14,33 @@ pub struct Sphere {
 
     is_moving : bool,
     center_vec : Rvec3,
+    bbox : AABB,
 }
 
 
 impl Sphere{
     pub fn new(cnt : Point3, rad : f64, mt : Rc<RefCell<dyn Material>>) -> Self{
+        let rvec = Rvec3::new_arg(rad, rad, rad);
         Self{
             center : cnt,
             radius : rad,
             mat : mt,
             is_moving : false,
-            center_vec : Rvec3::new()
+            center_vec : Rvec3::new(),
+            bbox : AABB::new_points(cnt - rvec, cnt + rvec)
         }
     }
     pub fn new_movable(cnt : Point3, cnt2 : Point3, rad : f64, mt : Rc<RefCell<dyn Material>>) -> Self{
+        let rvec = Rvec3::new_arg(rad, rad, rad);
+        let box1 = AABB::new_points(cnt - rvec, cnt + rvec);
+        let box2 = AABB::new_points(cnt2 - rvec, cnt2 + rvec);
         Self { 
             center:cnt, 
             radius: rad, 
             mat: mt, 
             is_moving: true, 
-            center_vec: cnt2-cnt
+            center_vec: cnt2-cnt,
+            bbox : AABB::new_boxes(box1,box2),
         }
     }
 
@@ -74,5 +82,9 @@ impl Hittable for Sphere{
         rec.mat = Rc::clone(&self.mat);
         
         true
+    }
+
+    fn bounding_box(&self) -> AABB {
+        self.bbox
     }
 }
