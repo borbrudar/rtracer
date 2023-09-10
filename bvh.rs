@@ -3,6 +3,7 @@ use crate::hitlist::*;
 use crate::aabb::AABB;
 use crate::interval::*;
 use crate::utility::*;
+use std::cmp::Ordering;
 use std::rc::Rc;
 
 pub struct BvhNode{
@@ -13,13 +14,13 @@ pub struct BvhNode{
 
 
 impl BvhNode {
-    pub fn new(src_objects : &Vec<Rc<dyn Hittable>>, start : i32, end : i32) -> Self{
-        let objects = src_objects; // Create a modifiable array of the source scene objects
+    pub fn new(src_objects : &mut Vec<Rc<dyn Hittable>>, start : i32, end : i32) -> Self{
+        let mut objects = src_objects; // Create a modifiable array of the source scene objects
 
         let axis = random_int(0,2);
 
 
-        type FunType = fn(Rc<(dyn Hittable + 'static)>, Rc<(dyn Hittable + 'static)>) -> bool;
+        type FunType = fn(&Rc<(dyn Hittable + 'static)>, &Rc<(dyn Hittable + 'static)>) -> Ordering;
         let mut comparator : FunType = BvhNode::box_x_compare;
         if axis == 1 { comparator = BvhNode::box_y_compare}
         else if axis == 2 { comparator = BvhNode::box_z_compare;}
@@ -33,7 +34,7 @@ impl BvhNode {
             lft = Rc::clone(&objects[start as usize]);
             rght = Rc::clone(&objects[start as usize]);
         }else if object_span == 2{
-            if comparator(Rc::clone(&objects[start as usize]), Rc::clone(&objects[(start+1) as usize])){
+            if comparator(&Rc::clone(&objects[start as usize]), &Rc::clone(&objects[(start+1) as usize])) == Ordering::Less{
                 lft = Rc::clone(&objects[start as usize]);
                 rght = Rc::clone(&objects[(start+1) as usize]);
             }else{
@@ -41,7 +42,7 @@ impl BvhNode {
                 rght = Rc::clone(&objects[start as usize]);
             }
         }else{
-            //objects.sort_by(comparator);
+            objects.sort_by(comparator);
         
             let mid = start + object_span/2;
             lft = Rc::new(BvhNode::new(objects,start,mid));
@@ -53,26 +54,31 @@ impl BvhNode {
         Self { bbox: bbbox, left: lft, right: rght }
     }
 
-    pub fn new_list(list : HittableList) -> Self{
+    pub fn new_list(mut list : HittableList) -> Self{
         let ln = list.objects.len() as i32;
-        BvhNode::new(&list.objects, 0, ln)
+        BvhNode::new(&mut list.objects, 0, ln)
     }
 
-    pub fn box_compare(a : Rc<dyn Hittable>, b : Rc<dyn Hittable>, axis_index : i32) -> bool{
-        a.bounding_box().axis(axis_index).min < b.bounding_box().axis(axis_index).min
+    pub fn box_compare(a : &Rc<dyn Hittable>, b : &Rc<dyn Hittable>, axis_index : i32) -> Ordering{
+        if a.bounding_box().axis(axis_index).min < b.bounding_box().axis(axis_index).min{
+            return Ordering::Less;
+        }else if a.bounding_box().axis(axis_index).min == b.bounding_box().axis(axis_index).min{
+            return Ordering::Equal;
+        }
+        return Ordering::Greater;
     }
 
-    pub fn box_x_compare(a : Rc<dyn Hittable>, b : Rc<dyn Hittable>) -> bool{
+    pub fn box_x_compare(a : &Rc<dyn Hittable>, b : &Rc<dyn Hittable>) -> Ordering{
         BvhNode::box_compare(a, b, 0)
     }
 
 
-    pub fn box_y_compare(a : Rc<dyn Hittable>, b : Rc<dyn Hittable>) -> bool{
+    pub fn box_y_compare(a : &Rc<dyn Hittable>, b  : &Rc<dyn Hittable>) -> Ordering{
         BvhNode::box_compare(a, b, 1)
     }
 
 
-    pub fn box_z_compare(a : Rc<dyn Hittable>, b : Rc<dyn Hittable>) -> bool{
+    pub fn box_z_compare(a : &Rc<dyn Hittable>, b : &Rc<dyn Hittable>) -> Ordering{
         BvhNode::box_compare(a, b, 2)
     }
 }

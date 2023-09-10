@@ -35,7 +35,7 @@ pub fn main(){
     //cam.samples_per_pixel = 70;
     //cam.max_depth = 500;
     cam.image_width  = 400;
-    cam.samples_per_pixel =100;
+    cam.samples_per_pixel =10;
     cam.max_depth = 10;
     
     cam.vfov = 20.0;
