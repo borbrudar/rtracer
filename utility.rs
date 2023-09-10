@@ -19,3 +19,7 @@ pub fn random_range(min : f64, max : f64) -> f64 {
     rng.gen_range(min..max)
 }
 
+pub fn random_int(a : i32, b : i32) -> i32{
+    let mut rng = rand::thread_rng();
+    rng.gen_range(a..b)
+}

@@ -1,10 +1,10 @@
 use crate::hit::*;
 use crate::ray::*;
 use crate::interval::*;
-
+use std::rc::Rc;
 
 pub struct HittableList {
-    objects : Vec<Box<dyn Hittable>> 
+    pub objects : Vec<Rc<dyn Hittable>> 
 }
 
 impl HittableList{
@@ -13,11 +13,17 @@ impl HittableList{
             objects : Vec::new()
         }
     }
+    pub fn new_arg(obj : Vec<Rc<dyn Hittable>>) -> Self{
+        Self { 
+            objects: obj 
+        }
+    }
+
     pub fn clear(&mut self){
         self.objects.clear();
     }
 
-    pub fn add(&mut self, object : Box<dyn Hittable>){
+    pub fn add(&mut self, object : Rc<dyn Hittable>){
         self.objects.push(object);
     }
 
