@@ -96,7 +96,7 @@ impl Rvec3 {
 
     pub fn near_zero(&mut self) -> bool {
         // Return true if the vector is close to zero in all dimensions.
-        let s = 1e-8; // 0.00000001
+        let s = 0.00000001; //1e-8
         self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s
     }
 

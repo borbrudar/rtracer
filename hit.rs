@@ -6,6 +6,7 @@ use crate::Ray;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Rvec3,
@@ -21,7 +22,7 @@ impl HitRecord {
             normal: Rvec3::new(),
             t: 0.0,
             front_face: false,
-            mat: Rc::new(Lambertian::new(Color::new())),
+            mat: Rc::new(Lambertian::new(Color::new_arg(251.0,0.0,120.0))),
         }
     }
 

@@ -172,6 +172,7 @@ impl Camera {
         ) {
             //let direction = Rvec3::random_on_hemisphere(&rec.normal); // uniform random distribution
             //let direction = rec.normal + Rvec3::random_unit_vector(); // lambertian distribution
+
             let mut scattered = Ray::new();
             let mut attenuation = Color::new();
 
