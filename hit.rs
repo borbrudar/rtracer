@@ -12,7 +12,9 @@ pub struct HitRecord{
     pub normal : Rvec3,
     pub t : f64,
     pub front_face : bool,
-    pub mat : Rc<RefCell<dyn Material>>
+    pub mat : Rc<RefCell<dyn Material>>,
+    pub v : f64, // coord mappings
+    pub u : f64,
 }
 
 impl HitRecord{
@@ -22,7 +24,9 @@ impl HitRecord{
             normal : Rvec3::new(),
             t : 0.0,
             front_face : false,
-            mat : Rc::new(RefCell::new(Lambertian::new(Color::new_arg(251.0,0.0,120.0))))
+            mat : Rc::new(RefCell::new(Lambertian::new(Color::new_arg(251.0,0.0,120.0)))),
+            v : 0.0,
+            u : 0.0,
         }
     }
 

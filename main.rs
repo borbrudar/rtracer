@@ -10,6 +10,7 @@ pub mod camera;
 pub mod material;
 pub mod aabb;
 pub mod bvh;
+pub mod texture;
 
 use hit::Hittable;
 use rvec3::*;
