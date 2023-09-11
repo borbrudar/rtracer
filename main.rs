@@ -27,9 +27,9 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::env;
 use crate::bvh::*;
+use crate::texture::*;
 
-pub fn main(){
-    //env::set_var("RUST_BACKTRACE", "1");
+pub fn random_spheres(){
     let mut cam = Camera::new();
 
     //cam.image_width = 1600;
@@ -53,8 +53,11 @@ pub fn main(){
     //world
     let mut world = HittableList::new();
 
+    //let checker = Rc::new(CheckerTexture::new_color(0.32, Color::new_arg(0.2, 0.3, 0.1),Color::new_arg(0.9, 0.9, 0.9)));
+    //world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker))) )));
+    
     let ground_material = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.5,0.5,0.5))));
-    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0,ground_material)));
+    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0, ground_material )));
 
     for a in -11..11{
         for b in -11..11{
@@ -101,4 +104,37 @@ pub fn main(){
     world = HittableList::new_arg(vc);
 
     cam.render(&mut world);
+}
+
+pub fn two_spheres(){
+    let mut world = HittableList::new();
+
+    let checker = Rc::new(CheckerTexture::new_color(0.32, Color::new_arg(0.2, 0.3, 0.1),Color::new_arg(0.9, 0.9, 0.9)));
+
+    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-10.0,0.0), 10.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker.clone()))) )));
+    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0, 10.0,0.0), 10.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker))) )));
+
+    let mut cam = Camera::new();
+
+    cam.aspect_ratio      = 16.0 / 9.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+
+    cam.vfov     = 20.0;
+    cam.lookfrom = Point3::new_arg(13.0,2.0,3.0);
+    cam.lookat   = Point3::new();
+    cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
+
+    cam.defocus_angle = 0.0;
+
+    cam.render(&mut world);
+}
+
+pub fn main(){
+    match 1 {
+        1 => random_spheres(),
+        2 => two_spheres(),
+        _ => ()
+    }
 }
