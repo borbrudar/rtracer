@@ -7,6 +7,7 @@ use crate::hitlist::*;
 use crate::ray::*;
 
 use crate::material::*;
+use std::time::{Duration,Instant};
 
 pub struct Camera{
     pub aspect_ratio : f64,  // Ratio of image width over height
@@ -78,7 +79,9 @@ impl Camera{
         // Render                         
         println!("P3\n{} {}\n255", &self.image_width,&self.image_height);
     
-        // Render
+        //timing
+        let start = Instant::now();
+        
         for j in 0..self.image_height {
             eprintln!("\rScanlines remaining: {}", self.image_height-j); 
             for i in 0..self.image_width{
@@ -87,12 +90,14 @@ impl Camera{
                     let mut r = self.get_ray(i,j); 
                     pixel_color += self.ray_color(&mut r, self.max_depth, world);
                 }
-
+                
                 write_color(&mut pixel_color, self.samples_per_pixel);
             }
         }
-
+        
         eprintln!("\rDone");
+        let duration = start.elapsed();
+        eprintln!("Time elapsed in expensive_function() is: {:?}", duration);
     }
 
     fn get_ray(&mut self, i : i32, j : i32) -> Ray{
