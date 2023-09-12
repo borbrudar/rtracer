@@ -13,6 +13,7 @@ pub mod bvh;
 pub mod texture;
 
 use hit::Hittable;
+use image::GenericImageView;
 use rvec3::*;
 use color::*;
 use ray::*;
@@ -59,6 +60,7 @@ pub fn random_spheres(){
     let ground_material = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.5,0.5,0.5))));
     world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0, ground_material )));
 
+    /*
     for a in -11..11{
         for b in -11..11{
             let choose_mat = random_double();
@@ -87,7 +89,7 @@ pub fn random_spheres(){
             }
         }
     }
-
+    */
     let material_1 = Rc::new(RefCell::new(Dielectric::new(1.5)));
     world.add(Rc::new(Sphere::new(Point3::new_arg( 0.0,1.0,0.0), 1.0, material_1)));
 
@@ -129,12 +131,39 @@ pub fn two_spheres(){
     cam.defocus_angle = 0.0;
 
     cam.render(&mut world);
+    
+}
+
+
+pub fn earth() {
+    let earth_texture = Rc::new(ImageTexture::new("earthmap.jpg".to_string()));
+    let earth_surface = Rc::new(RefCell::new(Lambertian::new_ptr(earth_texture)));
+    let globe = Rc::new(Sphere::new(Point3::new(), 2.0, earth_surface));
+
+    let mut cam = Camera::new();
+    let mut world : Vec<Rc<dyn Hittable>> =  Vec::new();
+    world.push(globe);
+
+    cam.aspect_ratio      = 16.0 / 9.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+
+    cam.vfov     = 20.0;
+    cam.lookfrom = Point3::new_arg(0.0,0.0,12.0);
+    cam.lookat   = Point3::new();
+    cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
+
+    cam.defocus_angle = 0.0;
+
+    cam.render(&mut HittableList::new_arg(world));
 }
 
 pub fn main(){
-    match 1 {
+    match 3 {
         1 => random_spheres(),
         2 => two_spheres(),
+        3 => earth(),
         _ => ()
     }
 }

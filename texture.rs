@@ -1,3 +1,4 @@
+use crate::interval::Interval;
 use crate::rvec3::*;
 use crate::color::*;
 use std::rc::Rc;
@@ -71,4 +72,65 @@ impl Texture for CheckerTexture {
         }
     }
     
+}
+
+
+use std::io::Cursor;
+use image::DynamicImage;
+use image::GenericImageView;
+use image::io::Reader as ImageReader;
+use std::path::Path;
+
+
+pub struct ImageTexture{
+    img : DynamicImage,
+}
+
+impl ImageTexture{
+    pub fn new(filename : String) -> Self{
+        Self { 
+            img : ImageReader::open(filename).unwrap().decode().unwrap()
+        }
+    }
+
+    pub fn clamp(x : i32, low : i32 , high : i32) -> i32{
+        // Return the value clamped to the range [low, high).
+        if x < low  {return low;}
+        if x < high {return x;}
+        return high-1;
+    }
+
+    pub fn pixel_data(&self, mut x : i32, mut y : i32) -> Color{
+        // Return the address of the three bytes of the pixel at x,y (or magenta if no data) -- which doesnt happen in rust?
+
+        x = ImageTexture::clamp(x,0,self.img.width() as i32);
+        y = ImageTexture::clamp(y,0,self.img.height() as i32);
+
+        let pixel = self.img.get_pixel(x as u32, y as u32);
+        Color::new_arg(pixel[0] as f64, pixel[1] as f64, pixel[2] as f64)
+    }
+
+}
+
+ 
+impl Texture for ImageTexture {
+    fn value(&self, mut u : f64, mut v : f64, p : Point3) -> Color {
+        // If we have no texture data, then return solid cyan as a debugging aid.
+        if self.img.height() <= 0 {
+            return Color::new_arg(0.0, 1.0, 1.0)
+        }
+        
+        // Clamp input texture coordinates to [0,1] x [1,0]
+        u = Interval::new_arg(0.0, 1.0).clamp(u);
+        v = 1.0 - Interval::new_arg(0.0,1.0).clamp(v); // Flip V to image coordinates
+
+
+        let i = (u * (self.img.width() as f64) ) as i32;
+        let j = (v * (self.img.height() as f64)) as i32;
+        let pixel = self.pixel_data(i,j);
+        
+        let color_scale = 1.0 / 255.0;
+        Color::new_arg(color_scale * pixel[0], color_scale* pixel[1], color_scale * pixel[2])
+    }
+
 }
