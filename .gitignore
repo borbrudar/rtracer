@@ -1,6 +1,7 @@
 /target
 img.ppm
 /save
+/.vscode
 
 # Added by cargo
 #
