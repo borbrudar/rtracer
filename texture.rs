@@ -2,6 +2,7 @@ use crate::interval::Interval;
 use crate::rvec3::*;
 use crate::color::*;
 use std::rc::Rc;
+use crate::perlin::*;
 
 pub trait Texture{
     fn value(&self, u : f64, v : f64, p : Point3) -> Color;

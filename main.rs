@@ -11,6 +11,8 @@ pub mod material;
 pub mod aabb;
 pub mod bvh;
 pub mod texture;
+pub mod perlin;
+
 
 use hit::Hittable;
 use image::GenericImageView;
@@ -145,8 +147,8 @@ pub fn earth() {
     world.push(globe);
 
     cam.aspect_ratio      = 16.0 / 9.0;
-    cam.image_width       = 400;
-    cam.samples_per_pixel = 100;
+    cam.image_width       = 1200;
+    cam.samples_per_pixel = 1000;
     cam.max_depth         = 50;
 
     cam.vfov     = 20.0;
@@ -159,11 +161,36 @@ pub fn earth() {
     cam.render(&mut HittableList::new_arg(world));
 }
 
+pub fn two_perlin_spheres() {
+    let mut world = HittableList::new();
+
+    let pertext = Rc::new(NoiseTexture::new());
+    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0),1000.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext.clone()))))));
+    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,    2.0,0.0),   2.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext))))));
+
+    let mut cam = Camera::new();
+
+    cam.aspect_ratio      = 16.0 / 9.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+
+    cam.vfov     = 20.0;
+    cam.lookfrom = Point3::new_arg(13.0,2.0,3.0);
+    cam.lookat   = Point3::new();
+    cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
+
+    cam.defocus_angle = 0.0;
+
+    cam.render(&mut world);
+}
+
 pub fn main(){
-    match 3 {
+    match 4 {
         1 => random_spheres(),
         2 => two_spheres(),
         3 => earth(),
+        4 => two_perlin_spheres(),
         _ => ()
     }
 }
