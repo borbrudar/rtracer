@@ -164,7 +164,7 @@ pub fn earth() {
 pub fn two_perlin_spheres() {
     let mut world = HittableList::new();
 
-    let pertext = Rc::new(NoiseTexture::new());
+    let pertext = Rc::new(NoiseTexture::new_arg(4.0));
     world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0),1000.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext.clone()))))));
     world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,    2.0,0.0),   2.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext))))));
 
