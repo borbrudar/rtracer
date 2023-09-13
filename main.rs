@@ -186,6 +186,7 @@ pub fn two_perlin_spheres() {
 }
 
 pub fn main(){
+    env::set_var("RUST_BACKTRACE", "1");
     match 4 {
         1 => random_spheres(),
         2 => two_spheres(),

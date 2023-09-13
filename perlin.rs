@@ -27,11 +27,27 @@ impl Perlin {
     }
 
     pub fn noise(&self, p : &mut Point3) -> f64{
-        let i = (4*p.x() as i32) & 255;       
-        let j = (4*p.y() as i32) & 255;
-        let k = (4*p.z() as i32) & 255;
+        let u = p.x() - p.x().floor();
+        let v = p.y() - p.y().floor();
+        let w = p.z() - p.z().floor();
+        
 
-        self.ranfloat[(self.perm_x[i as usize] ^ self.perm_y[j as usize] ^ self.perm_z[k as usize])  as usize]
+        let i = p.x() as i32;       
+        let j = p.y() as i32;
+        let k = p.z() as i32;
+
+        let mut c : [[[f64;2];2];2] = [[[0.0;2];2];2] ;
+
+        for di in 0..2{
+            for dj in 0..2{
+                for dk in 0..2{
+                    c[di][dj][dk] = self.ranfloat[(self.perm_x[((i as usize)+di) & 255] ^ 
+                        self.perm_y[((j as usize) + dj) & 255] ^ 
+                        self.perm_z[((k as usize) + dk) & 255])  as usize];
+                }
+            }
+        }
+        Perlin::trilinear_interp(c, u, v, w)
     }
 
 
@@ -46,12 +62,28 @@ impl Perlin {
     }
 
     pub fn permute(p : &mut Vec<i32>, n : i32) {
-        for i in (n-1)..0{
+        for i in (1..n).rev(){
             let target = random_int(0,i);
             let tmp = p[i as usize];
             p[i as usize] = p[target as usize];
             p[target as usize] = tmp;
         }
+    }
 
+
+    pub fn trilinear_interp(c :[[[f64;2];2];2], u : f64, v : f64, w : f64) -> f64{
+        let mut accum = 0.0;
+        for i in 0..2{
+            for j in 0..2{
+                for k in 0..2{
+                    let fi = i as f64;
+                    let fj = j as f64;
+                    let fk = k as f64;
+                    accum += (fi*u + (1.0-fi) * (1.0-u)) * (fj*v + (1.0-fj) * (1.0-v)) * (fk*w + (1.0-fk) * (1.0-w)) * c[i][j][k];
+                }
+            }
+        }
+        
+        accum
     }
 }
