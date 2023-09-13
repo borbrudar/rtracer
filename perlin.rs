@@ -36,18 +36,18 @@ impl Perlin {
         w = w*w*(3.0-2.0*w);
         
 
-        let i = p.x() as i32;       
-        let j = p.y() as i32;
-        let k = p.z() as i32;
+        let i = p.x().floor() as i32;       
+        let j = p.y().floor() as i32;
+        let k = p.z().floor() as i32;
 
-        let mut c : [[[f64;2];2];2] = [[[0.0;2];2];2] ;
+        let mut c = [[[0.0;2];2];2];
 
-        for di in 0..2{
-            for dj in 0..2{
-                for dk in 0..2{
-                    c[di][dj][dk] = self.ranfloat[(self.perm_x[((i as usize)+di) & 255] ^ 
-                        self.perm_y[((j as usize) + dj) & 255] ^ 
-                        self.perm_z[((k as usize) + dk) & 255])  as usize];
+        for di in 0i32..2{
+            for dj in 0i32..2{
+                for dk in 0i32..2{
+                    c[di as usize][dj as usize][dk as usize] = self.ranfloat[(self.perm_x[((i +di) & 255) as usize] ^ 
+                        self.perm_y[((j + dj) & 255) as usize] ^ 
+                        self.perm_z[((k + dk) & 255) as usize])  as usize];
                 }
             }
         }
