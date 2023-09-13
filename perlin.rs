@@ -111,4 +111,18 @@ impl Perlin {
 
         accum
     }
+
+    pub fn turb(&self, p : &Point3, depth : i32) -> f64{
+        let mut accum : f64 = 0.0;
+        let mut temp_p = (*p).clone();
+        let mut weight = 1.0;
+
+        for i in 0..depth {
+            accum += weight * self.noise(&mut temp_p);
+            weight *= 0.5;
+            temp_p = temp_p * 2.0;
+        }
+
+        accum.abs()
+    }
 }
