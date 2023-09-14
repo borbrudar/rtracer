@@ -9,14 +9,14 @@ use std::cell::RefCell;
 
 pub struct BvhNode{
     bbox : AABB,    
-    left : Rc<RefCell<dyn Hittable>>,
-    right : Rc<RefCell<dyn Hittable>>
+    _left : Rc<RefCell<dyn Hittable>>,
+    _right : Rc<RefCell<dyn Hittable>>
 }
 
 
 impl BvhNode {
     pub fn new(src_objects : &mut Vec<Rc<RefCell<dyn Hittable>>>, start : i32, end : i32) -> Self{
-        let mut objects = src_objects.clone(); // Create a modifiable array of the source scene objects
+        let mut objects = src_objects.to_owned(); // Create a modifiable array of the source scene objects
 
         let axis = random_int(0,2);
 
@@ -52,7 +52,7 @@ impl BvhNode {
 
         let bbbox = AABB::new_boxes(lft.borrow_mut().bounding_box(), rght.borrow_mut().bounding_box());
           
-        Self { bbox: bbbox, left: lft, right: rght }
+        Self { bbox: bbbox, _left: lft, _right: rght }
     }
 
     pub fn new_list(mut list : HittableList) -> Self{
@@ -91,13 +91,13 @@ impl Hittable for BvhNode{
             return false;
         }
         
-        let hit_left = self.left.borrow_mut().hit(ray,ray_t,rec);
+        let hit__left = self._left.borrow_mut().hit(ray,ray_t,rec);
         let mut mx = ray_t.max;
-        if hit_left { mx = rec.t;}
+        if hit__left { mx = rec.t;}
         
-        let hit_right = self.right.borrow_mut().hit(ray, &mut Interval::new_arg(ray_t.min, mx), rec);
+        let hit__right = self._right.borrow_mut().hit(ray, &mut Interval::new_arg(ray_t.min, mx), rec);
         
-        hit_left || hit_right
+        hit__left || hit__right
         */
         todo!("broke it lmao")
     }

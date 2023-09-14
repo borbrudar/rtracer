@@ -6,7 +6,6 @@ use crate::hit::*;
 use crate::hitlist::*;
 use crate::ray::*;
 
-use crate::material::*;
 use std::time::{Instant};
 
 pub struct Camera{
@@ -88,7 +87,7 @@ impl Camera{
                 let mut pixel_color = Color::new_arg(0.0,0.0,0.0);
                 for _sample in 0..self.samples_per_pixel {
                     let mut r = self.get_ray(i,j); 
-                    pixel_color += self.ray_color(&mut r, self.max_depth, world);
+                    pixel_color += Camera::ray_color(&mut r, self.max_depth, world);
                 }
                 
                 write_color(&mut pixel_color, self.samples_per_pixel);
@@ -166,7 +165,7 @@ impl Camera{
         self.defocus_disk_v = self.v * defocus_radius;
     }
 
-    fn ray_color(&mut self,r : &mut Ray, depth : i32, world : &mut HittableList) -> Color {
+    fn ray_color(r : &mut Ray, depth : i32, world : &mut HittableList) -> Color {
         let mut rec : HitRecord = HitRecord::new(); 
 
         if depth <= 0 {
@@ -180,7 +179,7 @@ impl Camera{
             let mut scattered = Ray::new();
             let mut attenuation = Color::new();
             if rec.mat.borrow_mut().scatter(r, &rec, &mut attenuation,&mut scattered) {
-                return attenuation * self.ray_color(&mut scattered,depth-1,world);
+                return attenuation * Camera::ray_color(&mut scattered,depth-1,world);
             }   
             return Color::new_arg(0.0,0.0,0.0);
         }

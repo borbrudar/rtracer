@@ -117,7 +117,7 @@ impl ImageTexture{
 impl Texture for ImageTexture {
     fn value(&self, mut u : f64, mut v : f64, _p : Point3) -> Color {
         // If we have no texture data, then return solid cyan as a debugging aid.
-        if self.img.height() <= 0 {
+        if self.img.height() == 0 {
             return Color::new_arg(0.0, 1.0, 1.0)
         }
         

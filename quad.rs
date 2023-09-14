@@ -6,30 +6,30 @@ use crate::hit::*;
 use std::cell::RefCell;
 
 pub struct Quad{
-    Q : Point3,
+    q : Point3,
     u : Rvec3,
     v : Rvec3,
     mat : Rc<RefCell<dyn Material>>,
     bbox : AABB,
     normal : Rvec3,
-    D : f64,
+    d : f64,
     w : Rvec3,
 }
 
 impl Quad{
-    pub fn new(_Q : Point3, _u : Rvec3, _v : Rvec3, m : Rc<RefCell<dyn Material>>) -> Self{
+    pub fn new(_q : Point3, _u : Rvec3, _v : Rvec3, m : Rc<RefCell<dyn Material>>) -> Self{
         let mut n = Rvec3::cross(&_u,&_v);
         let norm = Rvec3::unit_vector(&mut n);
-        let d = Rvec3::dot(&norm, &_Q);
+        let _d = Rvec3::dot(&norm, &_q);
         let _w = n / Rvec3::dot(&n,&n);
         Self{
-            Q : _Q,
+            q : _q,
             u : _u,
             v : _v,
             mat : m,
-            bbox : AABB::new_points(_Q,_Q+_u+_v).pad(), // set_bounding_box()
+            bbox : AABB::new_points(_q,_q+_u+_v).pad(), // set_bounding_box()
             normal : norm,
-            D : d,
+            d : _d,
             w : _w,
         }
     }
@@ -60,14 +60,14 @@ impl Hittable for Quad{
         }
 
         // Return false if the hit point parameter t is outside the ray interval.
-        let t = (self.D - Rvec3::dot(&self.normal, &ray.origin())) / denom;
+        let t = (self.d - Rvec3::dot(&self.normal, &ray.origin())) / denom;
         if !ray_t.contains(t) {    
             return false;
         }
 
         // Determine the hit point lies within the planar shape using its plane coordinates.
         let intersection = ray.at(t);
-        let planar_hitpt_vector = intersection - self.Q;
+        let planar_hitpt_vector = intersection - self.q;
         let alpha = Rvec3::dot(&self.w, &Rvec3::cross(&planar_hitpt_vector, &self.v));
         let beta = Rvec3::dot(&self.w, &Rvec3::cross(&self.u, &planar_hitpt_vector));
 

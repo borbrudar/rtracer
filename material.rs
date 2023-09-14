@@ -101,13 +101,11 @@ impl Material for Dielectric{
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
  
         let cannot_refract = refraction_ratio * sin_theta > 1.0;
-        let mut direction = Rvec3::new();
-
-        if cannot_refract || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double() {
-            direction = Rvec3::reflect(unit_direction,rec.normal);
-        }else{
-            direction = Rvec3::refract(&unit_direction, &rec.normal, refraction_ratio);
-        }
+        let direction : Rvec3 = if cannot_refract || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double() {
+            Rvec3::reflect(unit_direction,rec.normal)
+        }else{ 
+            Rvec3::refract(&unit_direction, &rec.normal, refraction_ratio)
+        };
 
         *scattered = Ray::new_time(rec.p, direction,r_in.time());
         true
@@ -118,6 +116,12 @@ impl Material for Dielectric{
 pub struct NoiseTexture{
     noise : Perlin,
     scale : f64,
+}
+
+impl Default for NoiseTexture{
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl NoiseTexture{

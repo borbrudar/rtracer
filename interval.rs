@@ -6,6 +6,12 @@ pub struct Interval{
     pub max : f64
 }
 
+impl Default for Interval{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Interval{
     // returns empty interval
     pub fn new() -> Self{
@@ -50,6 +56,6 @@ impl Interval{
         Interval { min: self.min-padding, max: self.max+padding }
     }
 
-    const empty : Interval = Interval{min : INFINITY, max : -INFINITY};
-    const universe : Interval = Interval{min : -INFINITY, max : INFINITY};
+    const _EMPTY : Interval = Interval{min : INFINITY, max : -INFINITY};
+    const _UNIVERSE : Interval = Interval{min : -INFINITY, max : INFINITY};
 }

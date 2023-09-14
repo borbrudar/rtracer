@@ -9,6 +9,12 @@ pub struct AABB{
     pub z : Interval,
 }
 
+impl Default for AABB{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AABB{
     //empty bounding box
     pub fn new() -> Self{
@@ -58,13 +64,13 @@ impl AABB{
                 continue;
             }
 
-            let invD = 1.0 / r.direction().e[a];
+            let inv_d = 1.0 / r.direction().e[a];
             let orig = r.origin().e[a];
 
-            let mut t0 = (self.axis(a as i32).min - orig) * invD;
-            let mut t1 = (self.axis(a as i32).max - orig) * invD;
+            let mut t0 = (self.axis(a as i32).min - orig) * inv_d;
+            let mut t1 = (self.axis(a as i32).max - orig) * inv_d;
 
-            if invD < 0.0{
+            if inv_d < 0.0{
                 std::mem::swap(&mut t0, &mut t1);
             }
 

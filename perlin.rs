@@ -9,12 +9,18 @@ pub struct Perlin{
     perm_z : Vec<i32>,
 }
 
+impl Default for Perlin{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Perlin {
-    const point_count : i32 = 256;
+    const POINT_COUNT : i32 = 256;
   
     pub fn new() -> Self{
         let mut tmp : Vec<Rvec3> = Vec::new();
-        for _i in 0..Perlin::point_count {
+        for _i in 0..Perlin::POINT_COUNT {
             //tmp.push(Rvec3::unit_vector(&mut Rvec3::random_in_unit_sphere()));
             tmp.push(Rvec3::unit_vector(&mut Rvec3::random_vec_range(-1.0, 1.0)));
         }
@@ -55,15 +61,15 @@ impl Perlin {
 
     pub fn perlin_generate_perm() -> Vec<i32> {
         let mut p : Vec<i32> = Vec::new();
-        for i in 0..Perlin::point_count{
+        for i in 0..Perlin::POINT_COUNT{
             p.push(i);
         }
-        Perlin::permute(&mut p,Perlin::point_count);
+        Perlin::permute(&mut p,Perlin::POINT_COUNT);
 
         p
     }
 
-    pub fn permute(p : &mut Vec<i32>, n : i32) {
+    pub fn permute(p : &mut [i32], n : i32) {
         for i in (1..n).rev(){
             let target = random_int(0,i);
             p.swap(i as usize, target as usize);
@@ -71,6 +77,7 @@ impl Perlin {
     }
 
     //deprecated
+    /*
     pub fn trilinear_interp(c :[[[f64;2];2];2], u : f64, v : f64, w : f64) -> f64{
         let mut accum = 0.0;
         for i in 0..2{
@@ -86,6 +93,7 @@ impl Perlin {
         
         accum
     }
+    */
 
 
     pub fn perlin_interp(c : [[[Rvec3;2];2];2], u : f64, v : f64, w : f64) -> f64{

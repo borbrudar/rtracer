@@ -105,8 +105,7 @@ pub fn random_spheres(){
 
     // ?????
     let node = BvhNode::new_list(world);
-    let mut vc : Vec<Rc<RefCell<dyn Hittable>>> = Vec::new();
-    vc.push(Rc::new(RefCell::new(node)));
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
     world = HittableList::new_arg(vc);
 
     cam.render(&mut world);
@@ -145,8 +144,7 @@ pub fn earth() {
     let globe = Rc::new(RefCell::new(Sphere::new(Point3::new(), 2.0, earth_surface)));
 
     let mut cam = Camera::new();
-    let mut world : Vec<Rc<RefCell<dyn Hittable>>> =  Vec::new();
-    world.push(globe);
+    let world : Vec<Rc<RefCell<dyn Hittable>>> = vec![globe];
 
     cam.aspect_ratio      = 16.0 / 9.0;
     cam.image_width       = 1200;
