@@ -231,7 +231,8 @@ pub fn simple_light() {
     world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,    2.0, 0.0),    2.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext)))))));
 
     let difflight = Rc::new(RefCell::new(DiffuseLight::new_col(Color::new_arg(4.0, 4.0, 4.0))));
-    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(3.0, 1.0, -2.0), Rvec3::new_arg(2.0, 0.0, 0.0), Rvec3::new_arg(0.0, 2.0, 0.0), difflight))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(3.0, 1.0, -2.0), Rvec3::new_arg(2.0, 0.0, 0.0), Rvec3::new_arg(0.0, 2.0, 0.0), difflight.clone()))));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0, 7.0, 0.0), 2.0, difflight))));
 
     let mut cam = Camera::new();
 
@@ -251,15 +252,49 @@ pub fn simple_light() {
     cam.render(&mut world);
 }
 
+pub fn cornell_box() {
+    let mut world = HittableList::new();
+
+    let red   = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.65, 0.05, 0.05))));
+    let white = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.73, 0.73, 0.73))));
+    let green = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.12, 0.45, 0.15))));
+    let light = Rc::new(RefCell::new(DiffuseLight::new_col(Color::new_arg(15.0, 15.0, 15.0))));
+
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(555.0,   0.0,   0.0), Rvec3::new_arg(   0.0, 555.0, 0.0), Rvec3::new_arg(0.0,  0.0, 555.0), green))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(  0.0,   0.0,   0.0), Rvec3::new_arg(   0.0, 555.0, 0.0), Rvec3::new_arg(0.0,  0.0, 555.0), red))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(343.0, 554.0, 332.0), Rvec3::new_arg(-130.0,   0.0, 0.0), Rvec3::new_arg(0.0,  0.0,-105.0), light))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(  0.0,   0.0,   0.0), Rvec3::new_arg( 555.0,   0.0, 0.0), Rvec3::new_arg(0.0,  0.0, 555.0), white.clone()))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(555.0, 555.0, 555.0), Rvec3::new_arg(-555.0,   0.0, 0.0), Rvec3::new_arg(0.0,  0.0,-555.0), white.clone()))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(  0.0,   0.0, 555.0), Rvec3::new_arg( 555.0,   0.0, 0.0), Rvec3::new_arg(0.0,555.0,   0.0), white))));
+
+    let mut cam = Camera::new();
+
+    cam.aspect_ratio      = 1.0;
+    cam.image_width       = 600;
+    cam.samples_per_pixel = 200;
+    cam.max_depth         = 50;
+    cam.background        = Color::new();
+
+    cam.vfov     = 40.0;
+    cam.lookfrom = Point3::new_arg(278.0, 278.0, -800.0);
+    cam.lookat   = Point3::new_arg(278.0, 278.0, 0.0);
+    cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
+
+    cam.defocus_angle = 0.0;
+
+    cam.render(&mut world);
+}
+
 pub fn main(){
     env::set_var("RUST_BACKTRACE", "1");
-    match 6 {
+    match 7 {
         1 => random_spheres(),
         2 => two_spheres(),
         3 => earth(),
         4 => two_perlin_spheres(),
         5 => quads(),
         6 => simple_light(),
+        7 => cornell_box(),
         _ => ()
     }
 }
