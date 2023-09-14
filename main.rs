@@ -201,8 +201,9 @@ pub fn quads() {
     world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-3.0,-2.0, 5.0), Rvec3::new_arg(0.0, 0.0,-4.0), Rvec3::new_arg(0.0, 4.0, 0.0), left_red))));
     world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-2.0,-2.0, 0.0), Rvec3::new_arg(4.0, 0.0, 0.0), Rvec3::new_arg(0.0, 4.0, 0.0), back_green))));
     world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg( 3.0,-2.0, 1.0), Rvec3::new_arg(0.0, 0.0, 4.0), Rvec3::new_arg(0.0, 4.0, 0.0), right_blue))));
-    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-2.0, 3.0, 1.0), Rvec3::new_arg(4.0, 0.0, 0.0), Rvec3::new_arg(0.0, 0.0, 4.0), upper_orange))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-2.0, 3.0, 1.0), Rvec3::new_arg(4.0, 0.0, 0.0), Rvec3::new_arg(0.0, 0.0, 4.0), upper_orange))));    
     world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-2.0,-3.0, 5.0), Rvec3::new_arg(4.0, 0.0, 0.0), Rvec3::new_arg(0.0, 0.0,-4.0), lower_teal))));
+
 
     let mut cam = Camera::new();
 
@@ -211,7 +212,7 @@ pub fn quads() {
     cam.samples_per_pixel = 100;
     cam.max_depth         = 50;
 
-    cam.vfov     = 120.0;
+    cam.vfov     = 80.0;
     cam.lookfrom = Point3::new_arg(0.0,0.0,9.0);
     cam.lookat   = Point3::new_arg(0.0,0.0,0.0);
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);

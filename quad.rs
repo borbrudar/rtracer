@@ -20,7 +20,7 @@ impl Quad{
     pub fn new(_Q : Point3, _u : Rvec3, _v : Rvec3, m : Rc<RefCell<dyn Material>>) -> Self{
         let mut n = Rvec3::cross(&_u,&_v);
         let norm = Rvec3::unit_vector(&mut n);
-        let d = Rvec3::dot(&n, &_Q);
+        let d = Rvec3::dot(&norm, &_Q);
         let _w = n / Rvec3::dot(&n,&n);
         Self{
             Q : _Q,

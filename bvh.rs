@@ -90,13 +90,13 @@ impl Hittable for BvhNode{
         if !self.bbox.hit(ray,*ray_t) {
             return false;
         }
-
-        let hit_left = self.left.hit(ray,ray_t,rec);
+        
+        let hit_left = self.left.borrow_mut().hit(ray,ray_t,rec);
         let mut mx = ray_t.max;
         if hit_left { mx = rec.t;}
-
-        let hit_right = self.right.hit(ray, &mut Interval::new_arg(ray_t.min, mx), rec);
-
+        
+        let hit_right = self.right.borrow_mut().hit(ray, &mut Interval::new_arg(ray_t.min, mx), rec);
+        
         hit_left || hit_right
         */
         todo!("broke it lmao")
