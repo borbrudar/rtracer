@@ -54,6 +54,8 @@ pub fn random_spheres(){
     cam.lookfrom = Point3::new_arg(13.0,2.0,3.0);
     cam.lookat   = Point3::new_arg(0.0,0.0,0.0);
     cam.vup      = Point3::new_arg(0.0,1.0,0.0);
+
+    cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     
     //world
     let mut world = HittableList::new();
@@ -131,6 +133,7 @@ pub fn two_spheres(){
     cam.lookat   = Point3::new();
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
 
+    cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     cam.defocus_angle = 0.0;
 
     cam.render(&mut world);
@@ -155,7 +158,7 @@ pub fn earth() {
     cam.lookfrom = Point3::new_arg(0.0,0.0,12.0);
     cam.lookat   = Point3::new();
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
-
+    cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     cam.defocus_angle = 0.0;
 
     cam.render(&mut HittableList::new_arg(world));
@@ -179,7 +182,7 @@ pub fn two_perlin_spheres() {
     cam.lookfrom = Point3::new_arg(13.0,2.0,3.0);
     cam.lookat   = Point3::new();
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
-
+    cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     cam.defocus_angle = 0.0;
 
     cam.render(&mut world);
@@ -214,6 +217,34 @@ pub fn quads() {
     cam.lookfrom = Point3::new_arg(0.0,0.0,9.0);
     cam.lookat   = Point3::new_arg(0.0,0.0,0.0);
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
+    cam.background  = Color::new_arg(0.70, 0.80, 1.00);
+    cam.defocus_angle = 0.0;
+
+    cam.render(&mut world);
+}
+
+pub fn simple_light() {
+    let mut world = HittableList::new();
+
+    let pertext = Rc::new(NoiseTexture::new_arg(4.0));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,-1000.0, 0.0), 1000.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext.clone())))))));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,    2.0, 0.0),    2.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext)))))));
+
+    let difflight = Rc::new(RefCell::new(DiffuseLight::new_col(Color::new_arg(4.0, 4.0, 4.0))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(3.0, 1.0, -2.0), Rvec3::new_arg(2.0, 0.0, 0.0), Rvec3::new_arg(0.0, 2.0, 0.0), difflight))));
+
+    let mut cam = Camera::new();
+
+    cam.aspect_ratio      = 16.0 / 9.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+    cam.background        = Color::new();
+
+    cam.vfov     = 20.0;
+    cam.lookfrom = Point3::new_arg(26.0,3.0,6.0);
+    cam.lookat   = Point3::new_arg(0.0,2.0,0.0);
+    cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
 
     cam.defocus_angle = 0.0;
 
@@ -222,12 +253,13 @@ pub fn quads() {
 
 pub fn main(){
     env::set_var("RUST_BACKTRACE", "1");
-    match 5 {
+    match 6 {
         1 => random_spheres(),
         2 => two_spheres(),
         3 => earth(),
         4 => two_perlin_spheres(),
         5 => quads(),
+        6 => simple_light(),
         _ => ()
     }
 }

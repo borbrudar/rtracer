@@ -9,6 +9,9 @@ use crate::perlin::*;
 
 pub trait Material{
     fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool;
+    fn emitted(&mut self, u : f64, v : f64, p : &Point3) -> Color {
+        return Color::new();
+    }
 }
 
 
@@ -110,7 +113,6 @@ impl Material for Dielectric{
         *scattered = Ray::new_time(rec.p, direction,r_in.time());
         true
     }
-
 }
 
 pub struct NoiseTexture{
@@ -137,5 +139,33 @@ impl Texture for NoiseTexture{
     fn value(&self, _u : f64, _v : f64, p : Point3) -> Color {
         let mut s = self.scale * p;
         Color::new_arg(1.0, 1.0, 1.0) * 0.5  * (1.0 + s.z().sin() + 10.0 * self.noise.turb(&s,7))
+    }
+}
+
+
+pub struct DiffuseLight {
+    emit : Rc<dyn Texture>,
+}
+
+impl DiffuseLight{
+    pub fn new(a : Rc<dyn Texture>) -> Self{
+        Self {
+            emit : a,
+        }
+    }
+
+    pub fn new_col(c : Color) -> Self{
+        Self {
+            emit : Rc::new(SolidColor::new(c)),
+        }
+    }
+}
+
+impl Material for DiffuseLight{
+    fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool {
+        false
+    }
+    fn emitted(&mut self, u : f64, v : f64, p : &Point3) -> Color {
+        self.emit.value(u,v,*p)
     }
 }

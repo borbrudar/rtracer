@@ -1,3 +1,4 @@
+use crate::color;
 use crate::utility::*;
 use crate::color::*;
 use crate::interval::*;
@@ -21,6 +22,8 @@ pub struct Camera{
 
     pub defocus_angle : f64, // Variation angle of rays through each pixel
     pub focus_dist : f64, // Distance from camera lookfrom point to plane of perfect focus
+
+    pub background : Color, // background color >_<
 
     image_height : i32,   // Rendered image height
     center : Point3,         // Camera center
@@ -56,7 +59,9 @@ impl Camera{
 
             defocus_angle : 0.0,
             focus_dist : 10.0,
-            // made up
+
+            background : Color::new(),
+
             image_height : 0,
             center : Point3::new(),
             pixel00_loc : Point3::new(),
@@ -87,7 +92,7 @@ impl Camera{
                 let mut pixel_color = Color::new_arg(0.0,0.0,0.0);
                 for _sample in 0..self.samples_per_pixel {
                     let mut r = self.get_ray(i,j); 
-                    pixel_color += Camera::ray_color(&mut r, self.max_depth, world);
+                    pixel_color += self.ray_color(&mut r, self.max_depth, world);
                 }
                 
                 write_color(&mut pixel_color, self.samples_per_pixel);
@@ -104,14 +109,13 @@ impl Camera{
         let pixel_center = self.pixel00_loc + ( (i as f64)* self.pixel_delta_u) + ((j as f64) * self.pixel_delta_v);
         let pixel_sample = pixel_center + self.pixel_sample_square();
 
-        let ray_origin = self.center;
+        let mut ray_origin = self.center;
 
         // turn on defocus blur (ray_origin must be mut)
-        /*
         if self.defocus_angle > 0.0{
             ray_origin = self.defocus_disk_sample();
         }
-        */
+        
         
         let ray_direction = Rvec3::unit_vector(&mut (pixel_sample - ray_origin));
         let ray_time = random_double();
@@ -165,28 +169,29 @@ impl Camera{
         self.defocus_disk_v = self.v * defocus_radius;
     }
 
-    fn ray_color(r : &mut Ray, depth : i32, world : &mut HittableList) -> Color {
+    fn ray_color(&self, r : &mut Ray, depth : i32, world : &mut HittableList) -> Color {
         let mut rec : HitRecord = HitRecord::new(); 
 
         if depth <= 0 {
             return Color::new();
         }
 
-        if world.hit(r, &mut Interval{min : 0.001, max : INFINITY} , &mut rec){
-            //let direction = Rvec3::random_on_hemisphere(&rec.normal); // uniform random distribution
-            //let direction = rec.normal + Rvec3::random_unit_vector(); // lambertian distribution
-
-            let mut scattered = Ray::new();
-            let mut attenuation = Color::new();
-            if rec.mat.borrow_mut().scatter(r, &rec, &mut attenuation,&mut scattered) {
-                return attenuation * Camera::ray_color(&mut scattered,depth-1,world);
-            }   
-            return Color::new_arg(0.0,0.0,0.0);
+         // If the ray hits nothing, return the background color.
+        if !world.hit(r, &mut Interval::new_arg(0.001, INFINITY), &mut rec){
+            return self.background;
         }
-        
-        let mut unit_direction = Rvec3::unit_vector(&mut r.direction());
-        let a : f64 = 0.5*(unit_direction.y() + 1.0);
-        (1.0-a)*Color::new_arg(1.0,1.0,1.0) + a*Color::new_arg(0.5,0.7,1.0)
+
+        let mut scattered = Ray::new();
+        let mut attenuation = Color::new();
+        let color_from_emission = rec.mat.borrow_mut().emitted(rec.u, rec.v, &rec.p);
+
+        if !rec.mat.borrow_mut().scatter(r, &rec, &mut attenuation, &mut scattered){
+            return color_from_emission;
+        }
+
+        let color_from_scatter = attenuation * self.ray_color(&mut scattered, depth-1, world);
+
+        color_from_emission + color_from_scatter
     }
 
     pub fn defocus_disk_sample(&self)  -> Point3{
