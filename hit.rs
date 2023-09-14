@@ -148,14 +148,14 @@ impl Hittable for RotateY{
 
     fn hit(&mut self, r: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool {
         // Change the ray from world space to object space
-        let mut origin = r.origin();
-        let mut direction = r.direction();
+        let mut origin = r.origin().clone();
+        let mut direction = r.direction().clone();
 
-        origin.e[0] = self.cos_theta * r.origin().e[0] - self.sin_theta * r.origin().e[2];
-        origin.e[2] = self.sin_theta * r.origin().e[0] + self.cos_theta * r.origin().e[2];
+        origin[0] = self.cos_theta * r.origin()[0] - self.sin_theta * r.origin()[2];
+        origin[2] = self.sin_theta * r.origin()[0] + self.cos_theta * r.origin()[2];
 
-        direction.e[0] = self.cos_theta * r.direction().e[0] - self.sin_theta * r.direction().e[2];
-        direction.e[2] = self.sin_theta * r.direction().e[0] + self.cos_theta * r.direction().e[2];
+        direction[0] = self.cos_theta * r.direction()[0] - self.sin_theta * r.direction()[2];
+        direction[2] = self.sin_theta * r.direction()[0] + self.cos_theta * r.direction()[2];
 
         let mut rotated_r = Ray::new_time(origin,direction,r.time());
 
