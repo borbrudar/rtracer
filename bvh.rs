@@ -1,7 +1,7 @@
 use crate::hit::*;
 use crate::hitlist::*;
 use crate::aabb::AABB;
-use crate::interval::*;
+
 use crate::utility::*;
 use std::cmp::Ordering;
 use std::rc::Rc;
@@ -66,7 +66,7 @@ impl BvhNode {
         }else if a.borrow_mut().bounding_box().axis(axis_index).min == b.borrow_mut().bounding_box().axis(axis_index).min{
             return Ordering::Equal;
         }
-        return Ordering::Greater;
+        Ordering::Greater
     }
 
     pub fn box_x_compare(a : &Rc<RefCell<dyn Hittable>>, b : &Rc<RefCell<dyn Hittable>>) -> Ordering{
@@ -85,7 +85,7 @@ impl BvhNode {
 }
 
 impl Hittable for BvhNode{
-    fn hit(&mut self, ray: &mut crate::ray::Ray, ray_t : &mut crate::interval::Interval, rec: &mut HitRecord) -> bool {
+    fn hit(&mut self, _ray: &mut crate::ray::Ray, _ray_t : &mut crate::interval::Interval, _rec: &mut HitRecord) -> bool {
         /*
         if !self.bbox.hit(ray,*ray_t) {
             return false;

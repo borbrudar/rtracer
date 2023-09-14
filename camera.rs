@@ -7,7 +7,7 @@ use crate::hitlist::*;
 use crate::ray::*;
 
 use crate::material::*;
-use std::time::{Duration,Instant};
+use std::time::{Instant};
 
 pub struct Camera{
     pub aspect_ratio : f64,  // Ratio of image width over height

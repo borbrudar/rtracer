@@ -37,7 +37,7 @@ impl Quad{
     pub fn is_interior(a : f64, b : f64, rec : &mut HitRecord) -> bool{
         // Given the hit point in plane coordinates, return false if it is outside the
         // primitive, otherwise set the hit record UV coordinates and return true.
-        if (a< 0.0) || (1.0 < a) || (b < 0.0) || (1.0 < b){
+        if !(0.0..=1.0).contains(&a) || !(0.0..=1.0).contains(&b){
             return false;
         }
 

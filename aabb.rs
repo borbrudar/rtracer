@@ -48,7 +48,7 @@ impl AABB{
     pub fn axis(&self, n : i32) -> Interval{
         if n == 1 { return self.y;}
         if n == 2 { return self.z;}
-        return self.x;
+        self.x
     }
 
     pub fn hit(&self, r : &mut Ray, mut ray_t : Interval) -> bool{
@@ -65,9 +65,7 @@ impl AABB{
             let mut t1 = (self.axis(a as i32).max - orig) * invD;
 
             if invD < 0.0{
-                let m = t0;
-                t0 = t1;
-                t1 = m;
+                std::mem::swap(&mut t0, &mut t1);
             }
 
             if t0 > ray_t.min { ray_t.min = t0;}

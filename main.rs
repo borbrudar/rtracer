@@ -16,14 +16,14 @@ pub mod quad;
 
 
 use hit::Hittable;
-use image::GenericImageView;
+
 use rvec3::*;
 use color::*;
 use ray::*;
 
 use hitlist::*;
 use sphere::*;
-use crate::utility::*;
+
 
 use camera::*;
 use material::*;

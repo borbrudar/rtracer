@@ -2,7 +2,7 @@ use crate::interval::Interval;
 use crate::rvec3::*;
 use crate::color::*;
 use std::rc::Rc;
-use crate::perlin::*;
+
 
 pub trait Texture{
     fn value(&self, u : f64, v : f64, p : Point3) -> Color;
@@ -26,7 +26,7 @@ impl SolidColor{
 }
 
 impl Texture for SolidColor{
-    fn value(&self, u : f64, v : f64, p : Point3) -> Color{
+    fn value(&self, _u : f64, _v : f64, _p : Point3) -> Color{
         self.color_value
     }
 }
@@ -67,20 +67,20 @@ impl Texture for CheckerTexture {
         let is_even = (x_integer + y_integer + z_integer) % 2 == 0;
 
         if is_even {
-            return self.even.value(u,v,p);
+            self.even.value(u,v,p)
         }else {
-            return self.odd.value(u,v,p);
+            self.odd.value(u,v,p)
         }
     }
     
 }
 
 
-use std::io::Cursor;
+
 use image::DynamicImage;
 use image::GenericImageView;
 use image::io::Reader as ImageReader;
-use std::path::Path;
+
 
 
 pub struct ImageTexture{
@@ -98,7 +98,7 @@ impl ImageTexture{
         // Return the value clamped to the range [low, high).
         if x < low  {return low;}
         if x < high {return x;}
-        return high-1;
+        high-1
     }
 
     pub fn pixel_data(&self, mut x : i32, mut y : i32) -> Color{
@@ -115,7 +115,7 @@ impl ImageTexture{
 
  
 impl Texture for ImageTexture {
-    fn value(&self, mut u : f64, mut v : f64, p : Point3) -> Color {
+    fn value(&self, mut u : f64, mut v : f64, _p : Point3) -> Color {
         // If we have no texture data, then return solid cyan as a debugging aid.
         if self.img.height() <= 0 {
             return Color::new_arg(0.0, 1.0, 1.0)

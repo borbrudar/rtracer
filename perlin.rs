@@ -14,7 +14,7 @@ impl Perlin {
   
     pub fn new() -> Self{
         let mut tmp : Vec<Rvec3> = Vec::new();
-        for i in 0..Perlin::point_count {
+        for _i in 0..Perlin::point_count {
             //tmp.push(Rvec3::unit_vector(&mut Rvec3::random_in_unit_sphere()));
             tmp.push(Rvec3::unit_vector(&mut Rvec3::random_vec_range(-1.0, 1.0)));
         }
@@ -28,9 +28,9 @@ impl Perlin {
     }
 
     pub fn noise(&self, p : &mut Point3) -> f64{
-        let mut u = p.x() - p.x().floor();
-        let mut v = p.y() - p.y().floor();
-        let mut w = p.z() - p.z().floor();
+        let u = p.x() - p.x().floor();
+        let v = p.y() - p.y().floor();
+        let w = p.z() - p.z().floor();
 
         let i = p.x().floor() as i32;       
         let j = p.y().floor() as i32;
@@ -66,9 +66,7 @@ impl Perlin {
     pub fn permute(p : &mut Vec<i32>, n : i32) {
         for i in (1..n).rev(){
             let target = random_int(0,i);
-            let tmp = p[i as usize];
-            p[i as usize] = p[target as usize];
-            p[target as usize] = tmp;
+            p.swap(i as usize, target as usize);
         }
     }
 
@@ -114,10 +112,10 @@ impl Perlin {
 
     pub fn turb(&self, p : &Point3, depth : i32) -> f64{
         let mut accum : f64 = 0.0;
-        let mut temp_p = (*p).clone();
+        let mut temp_p = *p;
         let mut weight = 1.0;
 
-        for i in 0..depth {
+        for _i in 0..depth {
             accum += weight * self.noise(&mut temp_p);
             weight *= 0.5;
             temp_p = temp_p * 2.0;

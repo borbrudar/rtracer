@@ -21,7 +21,7 @@ impl Ray{
         }
     }
     pub fn new_arg(_orig : Point3, _dir : Rvec3) -> Self{
-        let mut drr = _dir.clone();
+        let mut drr = _dir;
         drr = Rvec3::unit_vector(&mut drr);
         Self{
             orig : _orig,
@@ -30,7 +30,7 @@ impl Ray{
         }
     }
     pub fn new_time(_orig : Point3, _dir : Rvec3, tm : f64) -> Self{
-        let mut drr = _dir.clone();
+        let mut drr = _dir;
         drr = Rvec3::unit_vector(&mut drr);
         Self{
             orig : _orig,
