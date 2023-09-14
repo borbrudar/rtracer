@@ -265,7 +265,11 @@ pub fn cornell_box() {
     world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(343.0, 554.0, 332.0), Rvec3::new_arg(-130.0,   0.0, 0.0), Rvec3::new_arg(0.0,  0.0,-105.0), light))));
     world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(  0.0,   0.0,   0.0), Rvec3::new_arg( 555.0,   0.0, 0.0), Rvec3::new_arg(0.0,  0.0, 555.0), white.clone()))));
     world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(555.0, 555.0, 555.0), Rvec3::new_arg(-555.0,   0.0, 0.0), Rvec3::new_arg(0.0,  0.0,-555.0), white.clone()))));
-    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(  0.0,   0.0, 555.0), Rvec3::new_arg( 555.0,   0.0, 0.0), Rvec3::new_arg(0.0,555.0,   0.0), white))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(  0.0,   0.0, 555.0), Rvec3::new_arg( 555.0,   0.0, 0.0), Rvec3::new_arg(0.0,555.0,   0.0), white.clone()))));
+
+    //boxes
+    world.add(HittableList::box_new(&mut Point3::new_arg(130.0,0.0, 65.0), &mut Point3::new_arg(295.0, 165.0, 230.0), white.clone()));
+    world.add(HittableList::box_new(&mut Point3::new_arg(265.0,0.0,295.0), &mut Point3::new_arg(430.0, 330.0, 460.0), white.clone()));
 
     let mut cam = Camera::new();
 
