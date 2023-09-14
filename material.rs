@@ -3,6 +3,7 @@ use crate::ray::*;
 use crate::color::*;
 use crate::utility::random_double;
 use crate::rvec3::*;
+use std::borrow::BorrowMut;
 use std::rc::Rc;
 use crate::texture::*;
 use crate::perlin::*;
@@ -167,5 +168,27 @@ impl Material for DiffuseLight{
     }
     fn emitted(&mut self, u : f64, v : f64, p : &Point3) -> Color {
         self.emit.value(u,v,*p)
+    }
+}
+
+
+pub struct Isotropic{
+    albedo : Rc<dyn Texture>,
+}
+
+impl Isotropic{
+    pub fn new(c : Color) -> Self{
+        Self { albedo: Rc::new(SolidColor::new(c)) }
+    }
+    pub fn new_tex(a : Rc<dyn Texture>) -> Self{
+        Self { albedo:  a }
+    }
+}
+
+impl Material for Isotropic{
+    fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool {
+        *scattered = Ray::new_time(rec.p, Rvec3::random_unit_vector(), r_in.time());
+        *attenuation = self.albedo.value(rec.u,rec.v, rec.p); 
+        true   
     }
 }

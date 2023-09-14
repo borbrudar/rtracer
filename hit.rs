@@ -1,9 +1,13 @@
+use rand::random;
+
 use crate::rvec3::*;
 use crate::Ray;
 use crate::interval::*;
 use crate::material::*;
+use crate::texture::Texture;
 use crate::utility::INFINITY;
 use crate::utility::degrees_to_radians;
+use crate::utility::random_double;
 use std::borrow::BorrowMut;
 use std::cell::Ref;
 use std::convert::Infallible;
@@ -178,6 +182,69 @@ impl Hittable for RotateY{
 
         rec.p = p;
         rec.normal = normal;
+
+        true
+    }
+}
+
+
+pub struct ConstantMedium{
+    boundary : Rc<RefCell<dyn Hittable>>,
+    neg_inv_density : f64,
+    phase_function : Rc<RefCell<dyn Material>>,
+}
+
+impl ConstantMedium{
+    pub fn new_tex(b : Rc<RefCell<dyn Hittable>>, d : f64, a : Rc<dyn Texture>) -> Self{
+        Self { boundary: b, neg_inv_density: -1.0/d, phase_function: Rc::new(RefCell::new(Isotropic::new_tex(a))) }
+    }
+    pub fn new_col(b : Rc<RefCell<dyn Hittable>>, d : f64, c : Color) -> Self{
+        Self { boundary: b, neg_inv_density: -1.0/d, phase_function: Rc::new(RefCell::new(Isotropic::new(c))) }
+    }
+}
+
+impl Hittable for ConstantMedium{
+    fn bounding_box(&self) -> AABB {
+        self.boundary.borrow().bounding_box()        
+    }
+
+    fn hit(&mut self, r: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool {
+        // Print occasional samples when debugging. To enable, set enableDebug true.
+        let enableDebug = false;
+        let debugging = enableDebug && random_double() < 0.00001;
+
+        let mut rec1 = HitRecord::new();
+        let mut rec2 = HitRecord::new();
+
+        if !self.boundary.as_ref().borrow_mut().hit(r, &mut Interval::UNIVERSE, &mut rec1) { return false;} 
+        if !self.boundary.as_ref().borrow_mut().hit(r, &mut Interval::new_arg(rec1.t + 0.0001, INFINITY), &mut rec2) {return false;}
+
+        if debugging {
+            eprintln!("ray_tmin={}, ray_tmax={}", &rec1.t,&rec2.t);
+        }
+
+        if rec1.t < ray_t.min {rec1.t = ray_t.min;}
+        if rec2.t > ray_t.max {rec2.t = ray_t.max;}
+
+        if rec1.t >= rec2.t {return false;}
+        if rec1.t < 0.0 { rec1.t = 0.0;}
+
+        let ray_length = r.direction().length();
+        let distance_inside_boundary = (rec2.t - rec1.t) * ray_length;
+        let hit_distance = self.neg_inv_density * random_double().log10();
+
+        if hit_distance > distance_inside_boundary {return false;}
+
+        rec.t = rec1.t + hit_distance / ray_length;
+        rec.p = r.at(rec.t);
+
+        if debugging {
+            eprintln!("hit_distance= {} \nrec.t = {} \n rec.p = {} ", &hit_distance, &rec.t, &rec.p);
+        }
+
+        rec.normal = Rvec3::new_arg(1.0, 0.0, 0.0); // arbitrary
+        rec.front_face = true; //also arbitrary
+        rec.mat = Rc::clone(&self.phase_function);
 
         true
     }

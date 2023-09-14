@@ -58,8 +58,8 @@ impl Interval{
         Interval { min: self.min-padding, max: self.max+padding }
     }
 
-    const _EMPTY : Interval = Interval{min : INFINITY, max : -INFINITY};
-    const _UNIVERSE : Interval = Interval{min : -INFINITY, max : INFINITY};
+    pub const EMPTY : Interval = Interval{min : INFINITY, max : -INFINITY};
+    pub const UNIVERSE : Interval = Interval{min : -INFINITY, max : INFINITY};
 }
 
 
