@@ -67,7 +67,7 @@ impl Sphere{
 }
 
 impl Hittable for Sphere{
-    fn hit(&self, r: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool{
+    fn hit(&mut self, r: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool{
         let mut calc_center = self.center;
         if self.is_moving {
             calc_center = self.sphere_center(r.time());

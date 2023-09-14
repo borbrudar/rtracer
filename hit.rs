@@ -50,6 +50,6 @@ impl Default for HitRecord{
 }
 
 pub trait Hittable{
-    fn hit(&self, ray: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool;
+    fn hit(&mut self, ray: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool;
     fn bounding_box(&self) -> AABB;
 }

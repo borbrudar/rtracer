@@ -32,6 +32,7 @@ use std::cell::RefCell;
 use std::env;
 use crate::bvh::*;
 use crate::texture::*;
+use crate::quad::*;
 
 pub fn random_spheres(){
     let mut cam = Camera::new();
@@ -61,7 +62,7 @@ pub fn random_spheres(){
     //world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker))) )));
     
     let ground_material = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.5,0.5,0.5))));
-    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0, ground_material )));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0, ground_material ))));
 
     /*
     for a in -11..11{
@@ -94,18 +95,18 @@ pub fn random_spheres(){
     }
     */
     let material_1 = Rc::new(RefCell::new(Dielectric::new(1.5)));
-    world.add(Rc::new(Sphere::new(Point3::new_arg( 0.0,1.0,0.0), 1.0, material_1)));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg( 0.0,1.0,0.0), 1.0, material_1))));
 
     let material_2 = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.4,0.2,0.1))));
-    world.add(Rc::new(Sphere::new(Point3::new_arg( -4.0,   1.0,1.0), 1.0, material_2)));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg( -4.0,   1.0,1.0), 1.0, material_2))));
 
     let material_3 = Rc::new(RefCell::new(Metal::new(Color::new_arg(0.7,0.6,0.5),0.0)));
-    world.add(Rc::new(Sphere::new(Point3::new_arg(4.0,  1.0, 0.0), 1.0, material_3)));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(4.0,  1.0, 0.0), 1.0, material_3))));
 
     // ?????
     let node = BvhNode::new_list(world);
-    let mut vc : Vec<Rc<dyn Hittable>> = Vec::new();
-    vc.push(Rc::new(node));
+    let mut vc : Vec<Rc<RefCell<dyn Hittable>>> = Vec::new();
+    vc.push(Rc::new(RefCell::new(node)));
     world = HittableList::new_arg(vc);
 
     cam.render(&mut world);
@@ -116,8 +117,8 @@ pub fn two_spheres(){
 
     let checker = Rc::new(CheckerTexture::new_color(0.32, Color::new_arg(0.2, 0.3, 0.1),Color::new_arg(0.9, 0.9, 0.9)));
 
-    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-10.0,0.0), 10.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker.clone()))) )));
-    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0, 10.0,0.0), 10.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker))) )));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,-10.0,0.0), 10.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker.clone()))) ))));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0, 10.0,0.0), 10.0, Rc::new(RefCell::new(Lambertian::new_ptr(checker))) ))));
 
     let mut cam = Camera::new();
 
@@ -141,10 +142,10 @@ pub fn two_spheres(){
 pub fn earth() {
     let earth_texture = Rc::new(ImageTexture::new("earthmap.jpg".to_string()));
     let earth_surface = Rc::new(RefCell::new(Lambertian::new_ptr(earth_texture)));
-    let globe = Rc::new(Sphere::new(Point3::new(), 2.0, earth_surface));
+    let globe = Rc::new(RefCell::new(Sphere::new(Point3::new(), 2.0, earth_surface)));
 
     let mut cam = Camera::new();
-    let mut world : Vec<Rc<dyn Hittable>> =  Vec::new();
+    let mut world : Vec<Rc<RefCell<dyn Hittable>>> =  Vec::new();
     world.push(globe);
 
     cam.aspect_ratio      = 16.0 / 9.0;
@@ -166,8 +167,8 @@ pub fn two_perlin_spheres() {
     let mut world = HittableList::new();
 
     let pertext = Rc::new(NoiseTexture::new_arg(4.0));
-    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0),1000.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext.clone()))))));
-    world.add(Rc::new(Sphere::new(Point3::new_arg(0.0,    2.0,0.0),   2.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext))))));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0),1000.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext.clone())))))));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,    2.0,0.0),   2.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext)))))));
 
     let mut cam = Camera::new();
 
@@ -186,13 +187,48 @@ pub fn two_perlin_spheres() {
     cam.render(&mut world);
 }
 
+pub fn quads() {
+    let mut world = HittableList::new();
+
+    // Materials
+    let left_red     = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(1.0, 0.2, 0.2))));
+    let back_green   = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.2, 1.0, 0.2))));
+    let right_blue   = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.2, 0.2, 1.0))));
+    let upper_orange = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(1.0, 0.5, 0.0))));
+    let lower_teal   = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.2, 0.8, 0.8))));
+
+    // Quads
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-3.0,-2.0, 5.0), Rvec3::new_arg(0.0, 0.0,-4.0), Rvec3::new_arg(0.0, 4.0, 0.0), left_red))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-2.0,-2.0, 0.0), Rvec3::new_arg(4.0, 0.0, 0.0), Rvec3::new_arg(0.0, 4.0, 0.0), back_green))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg( 3.0,-2.0, 1.0), Rvec3::new_arg(0.0, 0.0, 4.0), Rvec3::new_arg(0.0, 4.0, 0.0), right_blue))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-2.0, 3.0, 1.0), Rvec3::new_arg(4.0, 0.0, 0.0), Rvec3::new_arg(0.0, 0.0, 4.0), upper_orange))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(-2.0,-3.0, 5.0), Rvec3::new_arg(4.0, 0.0, 0.0), Rvec3::new_arg(0.0, 0.0,-4.0), lower_teal))));
+
+    let mut cam = Camera::new();
+
+    cam.aspect_ratio      = 1.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+
+    cam.vfov     = 120.0;
+    cam.lookfrom = Point3::new_arg(0.0,0.0,9.0);
+    cam.lookat   = Point3::new_arg(0.0,0.0,0.0);
+    cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
+
+    cam.defocus_angle = 0.0;
+
+    cam.render(&mut world);
+}
+
 pub fn main(){
     env::set_var("RUST_BACKTRACE", "1");
-    match 4 {
+    match 5 {
         1 => random_spheres(),
         2 => two_spheres(),
         3 => earth(),
         4 => two_perlin_spheres(),
+        5 => quads(),
         _ => ()
     }
 }
