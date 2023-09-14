@@ -17,6 +17,8 @@ pub mod quad;
 
 use hit::Hittable;
 
+use hit::RotateY;
+use hit::Translate;
 use rvec3::*;
 use color::*;
 use ray::*;
@@ -270,6 +272,16 @@ pub fn cornell_box() {
     //boxes
     world.add(HittableList::box_new(&mut Point3::new_arg(130.0,0.0, 65.0), &mut Point3::new_arg(295.0, 165.0, 230.0), white.clone()));
     world.add(HittableList::box_new(&mut Point3::new_arg(265.0,0.0,295.0), &mut Point3::new_arg(430.0, 330.0, 460.0), white.clone()));
+
+    let mut box1 : Rc<RefCell<dyn Hittable>> = HittableList::box_new(&mut Point3::new(), &mut Point3::new_arg(165.0, 330.0, 165.0), white.clone());
+    box1 = Rc::new(RefCell::new(RotateY::new(box1,15.0)));
+    box1 = Rc::new(RefCell::new(Translate::new(box1, Rvec3::new_arg(265.0, 0.0, 295.0))));
+    world.add(box1);
+
+    let mut box2 : Rc<RefCell<dyn Hittable>> = HittableList::box_new(&mut Point3::new(), &mut Point3::new_arg(165.0, 165.0, 165.0), white);
+    box2 = Rc::new(RefCell::new(RotateY::new(box2,-18.0)));
+    box2 = Rc::new(RefCell::new(Translate::new(box2, Rvec3::new_arg(130.0, 0.0, 65.0))));
+    world.add(box2);
 
     let mut cam = Camera::new();
 
