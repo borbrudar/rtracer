@@ -1,4 +1,6 @@
 use crate::utility::*;
+use std::ops::Add;
+
 
 #[derive(Clone, Copy)]
 pub struct Interval{
@@ -58,4 +60,17 @@ impl Interval{
 
     const _EMPTY : Interval = Interval{min : INFINITY, max : -INFINITY};
     const _UNIVERSE : Interval = Interval{min : -INFINITY, max : INFINITY};
+}
+
+
+
+impl Add<f64> for Interval {
+    type Output = Self;
+
+    fn add(self, displacement: f64) -> Self {
+        Self {
+            min : self.min + displacement,
+            max : self.max + displacement,
+        }
+    }
 }

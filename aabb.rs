@@ -1,6 +1,8 @@
 use crate::interval::*;
 use crate::rvec3::*;
 use crate::ray::*;
+use std::ops::Add;
+
 
 #[derive(Clone, Copy)]
 pub struct AABB{
@@ -94,5 +96,19 @@ impl AABB{
         let new_z = if self.z.size() >= delta { self.z} else {self.z.expand(delta)};
 
         AABB::new_arg(new_x, new_y, new_z)
+    }
+}
+
+
+
+impl Add<Rvec3> for AABB {
+    type Output = Self;
+
+    fn add(self, mut offset: Rvec3) -> Self{
+        Self { 
+            x: self.x + offset.x(), 
+            y: self.y + offset.y(), 
+            z: self.z + offset.z(), 
+        }
     }
 }

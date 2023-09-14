@@ -2,6 +2,7 @@ use crate::rvec3::*;
 use crate::Ray;
 use crate::interval::*;
 use crate::material::*;
+use std::borrow::BorrowMut;
 use std::rc::Rc;
 use crate::color::*;
 use std::cell::RefCell;
@@ -52,4 +53,43 @@ impl Default for HitRecord{
 pub trait Hittable{
     fn hit(&mut self, ray: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool;
     fn bounding_box(&self) -> AABB;
+}
+
+pub struct Translate{
+    object : Rc<RefCell<dyn Hittable>>,
+    offset : Rvec3,
+    bbox : AABB,    
+}
+
+
+impl Translate{
+    pub fn new(p : Rc<RefCell<dyn Hittable>>, displacement : Rvec3) -> Self{
+        Self { 
+            object : p.clone(),
+            offset : displacement,
+            bbox : p.borrow().bounding_box().clone() + displacement
+        }
+    }
+}
+
+impl Hittable for Translate{
+    fn bounding_box(&self) -> AABB {
+        self.bbox
+    }
+
+    fn hit(&mut self, r: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool {
+        // Move the ray backwards by the offset
+        let mut offset_r = Ray::new_time(r.origin() - self.offset, r.direction(), r.time());
+        
+        // Determine where (if any) an intersection occurs along the offset ray
+        if !self.object.as_ref().borrow_mut().hit(&mut offset_r, ray_t, rec){
+            return false;
+        }
+
+
+        // Move the intersection point forwards by the offset
+        rec.p += self.offset;
+
+        true        
+    }   
 }
