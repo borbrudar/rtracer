@@ -30,6 +30,9 @@ use sphere::*;
 
 use camera::*;
 use material::*;
+use utility::random_double;
+use utility::random_range;
+use std::cell::Ref;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::env;
@@ -346,9 +349,91 @@ pub fn cornell_smoke(){
     cam.render(&mut world);
 }
 
+pub fn final_scene(image_width : i32, samples_per_pixel : i32, max_depth : i32) {
+    let mut boxes1 = HittableList::new();
+    let ground = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.48, 0.83, 0.53))));
+
+    let boxes_per_side: i32 = 20;
+
+    for i in 0..boxes_per_side{
+        for j in 0..boxes_per_side{
+            let w = 100.0;
+            let x0 = -1000.0 + i as f64*w;
+            let z0 = -1000.0 + j as f64*w;
+            let y0 = 0.0;
+            let x1 = x0 + w;
+            let y1 = random_range(1.0,101.0);
+            let z1 = z0 + w; 
+
+            boxes1.add(HittableList::box_new(&mut Point3::new_arg(x0, y0, z0), &mut Point3::new_arg(x1, y1, z1), ground.clone()));
+        }
+    }
+
+
+    let mut world = HittableList::new();
+
+    world.add(Rc::new(RefCell::new(boxes1))); //world.add(make_shared<bvh_node>(boxes1));
+
+    let light = Rc::new(RefCell::new(DiffuseLight::new_col(Color::new_arg(7.0,7.0,7.0))));
+    world.add(Rc::new(RefCell::new(Quad::new(Point3::new_arg(123.0, 554.0, 147.0), Rvec3::new_arg(300.0, 0.0, 0.0), Rvec3::new_arg(0.0, 0.0, 265.0), light))));
+
+
+    let center1 = Point3::new_arg(400.0, 400.0, 200.0);
+    let center2 = center1 + Rvec3::new_arg(30.0,0.0,0.0);
+
+    let sphere_material = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.7, 0.3, 0.1))));
+    world.add(Rc::new(RefCell::new(Sphere::new_movable(center1,center2, 50.0, sphere_material))));
+
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(260.0, 150.0, 45.0), 50.0, Rc::new(RefCell::new(Dielectric::new(1.5)) )))));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0, 150.0, 145.0), 50.0 , Rc::new(RefCell::new(Metal::new(Color::new_arg(0.8,0.8,0.9), 1.0)))))));
+
+
+    let mut boundary = Rc::new(RefCell::new(Sphere::new(Point3::new_arg(360.0, 150.0, 145.0), 70.0, Rc::new(RefCell::new(Dielectric::new(1.5))))));
+    world.add(boundary.clone());
+    world.add(Rc::new(RefCell::new(ConstantMedium::new_col(boundary, 0.2, Color::new_arg(0.2, 0.4, 0.9)))));
+    boundary = Rc::new(RefCell::new(Sphere::new(Point3::new(), 5000.0, Rc::new(RefCell::new(Dielectric::new(1.5))) )));
+    world.add(Rc::new(RefCell::new(ConstantMedium::new_col(boundary, 0.0001, Color::new_arg(1.0, 1.0, 1.0)))));
+
+
+    let emat = Rc::new(RefCell::new(Lambertian::new_ptr(Rc::new(ImageTexture::new("earthmap.jpg".to_string())))));
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(400.0, 200.0, 400.0), 100.0, emat))));
+    let pertext = Rc::new(NoiseTexture::new_arg(0.1));    
+    world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(220.0, 280.0, 300.0), 80.0, Rc::new(RefCell::new(Lambertian::new_ptr(pertext))) ))));
+
+    
+    let mut boxes2 = HittableList::new();
+    let white = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.73, 0.73, 0.73))));
+    let ns = 1000;
+    for j in 0..ns{
+        boxes2.add(Rc::new(RefCell::new(Sphere::new(Point3::random_vec_range(0.0, 165.0), 10.0 ,white.clone() ))));
+    }
+
+    world.add(Rc::new(RefCell::new(Translate::new(Rc::new(RefCell::new(RotateY::new( Rc::new(RefCell::new(boxes2)),15.0))), Rvec3::new_arg(-100.0,270.0,395.0)))));
+
+    let mut cam = Camera::new();
+
+    cam.aspect_ratio      = 1.0;
+    cam.image_width       = image_width;
+    cam.samples_per_pixel = samples_per_pixel;
+    cam.max_depth         = max_depth;
+    cam.background        = Color::new_arg(0.0,0.0,0.0);
+
+    cam.vfov     = 40.0;
+    cam.lookfrom = Point3::new_arg(478.0, 278.0, -600.0);
+    cam.lookat   = Point3::new_arg(278.0, 278.0,    0.0);
+    cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
+
+    cam.defocus_angle = 0.0;
+
+    cam.render(&mut world);
+}
+
+
+
+
 pub fn main(){
     env::set_var("RUST_BACKTRACE", "1");
-    match 8 {
+    match 0 {
         1 => random_spheres(),
         2 => two_spheres(),
         3 => earth(),
@@ -357,6 +442,7 @@ pub fn main(){
         6 => simple_light(),
         7 => cornell_box(),
         8 => cornell_smoke(),
-        _ => ()
+        9 => final_scene(800, 10000, 40),
+        _ => final_scene(400,  250,  40),
     }
 }
