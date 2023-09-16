@@ -14,9 +14,9 @@ Running in release is preffered.
 
 ## Examples
 
-![Example images](/../save/cornell.png?raw=true "Cornell Box")
+![Example images](/save/cornell.png?raw=true "Cornell Box")
 
-![Example images](/../save/final.png?raw=true "Final Image")
+![Example images](/save/final.png?raw=true "Final Image")
 
 ## License
 [GPLv3](license.md)
