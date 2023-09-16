@@ -14,7 +14,7 @@ Running in release is preffered.
 
 ## Examples
 
-![Example images](/../save/conrell.ppm?raw=true "Cornell Box")
+![Example images](/../save/cornell.ppm?raw=true "Cornell Box")
 
 
 ## License
