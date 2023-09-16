@@ -72,7 +72,6 @@ pub fn random_spheres(){
     let ground_material = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.5,0.5,0.5))));
     world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(0.0,-1000.0,0.0), 1000.0, ground_material ))));
 
-    /*
     for a in -11..11{
         for b in -11..11{
             let choose_mat = random_double();
@@ -86,22 +85,22 @@ pub fn random_spheres(){
                     let albedo = Color::random_vec() * Color::random_vec();
                     sphere_material = Rc::new(RefCell::new(Lambertian::new(albedo)));
                     let center2 = center + Rvec3::new_arg(0.0, random_range(0.0,0.5), 0.0);
-                    world.add(Rc::new(Sphere::new_movable(center,center2,0.2,sphere_material)));
+                    world.add(Rc::new(RefCell::new(Sphere::new_movable(center,center2,0.2,sphere_material))));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::random_vec_range(0.5,1.0);
                     let fuzz = random_range(0.0, 0.5);
                     sphere_material = Rc::new(RefCell::new(Metal::new(albedo,fuzz)));
-                    world.add(Rc::new(Sphere::new(center,0.2,sphere_material)));
+                    world.add(Rc::new(RefCell::new(Sphere::new(center,0.2,sphere_material))));
                 } else {
                     // glass
                     sphere_material = Rc::new(RefCell::new(Dielectric::new(1.5)));
-                    world.add(Rc::new(Sphere::new(center,0.2,sphere_material)));
+                    world.add(Rc::new(RefCell::new(Sphere::new(center,0.2,sphere_material))));
                 }
             }
         }
     }
-    */
+    
     let material_1 = Rc::new(RefCell::new(Dielectric::new(1.5)));
     world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg( 0.0,1.0,0.0), 1.0, material_1))));
 
@@ -111,7 +110,7 @@ pub fn random_spheres(){
     let material_3 = Rc::new(RefCell::new(Metal::new(Color::new_arg(0.7,0.6,0.5),0.0)));
     world.add(Rc::new(RefCell::new(Sphere::new(Point3::new_arg(4.0,  1.0, 0.0), 1.0, material_3))));
 
-    // ?????
+    // bvh
     let node = BvhNode::new_list(world);
     let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
     world = HittableList::new_arg(vc);
@@ -142,6 +141,12 @@ pub fn two_spheres(){
     cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     cam.defocus_angle = 0.0;
 
+
+    // bvh
+    let node = BvhNode::new_list(world);
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    world = HittableList::new_arg(vc);
+
     cam.render(&mut world);
     
 }
@@ -153,7 +158,7 @@ pub fn earth() {
     let globe = Rc::new(RefCell::new(Sphere::new(Point3::new(), 2.0, earth_surface)));
 
     let mut cam = Camera::new();
-    let world : Vec<Rc<RefCell<dyn Hittable>>> = vec![globe];
+    let mut world : Vec<Rc<RefCell<dyn Hittable>>> = vec![globe];
 
     cam.aspect_ratio      = 16.0 / 9.0;
     cam.image_width       = 1200;
@@ -167,7 +172,12 @@ pub fn earth() {
     cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     cam.defocus_angle = 0.0;
 
-    cam.render(&mut HittableList::new_arg(world));
+    // bvh
+    let node = BvhNode::new_list(HittableList::new_arg(world));
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    let mut rend = HittableList::new_arg(vc);
+
+    cam.render(&mut rend);
 }
 
 pub fn two_perlin_spheres() {
@@ -190,6 +200,11 @@ pub fn two_perlin_spheres() {
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
     cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     cam.defocus_angle = 0.0;
+
+    // bvh
+    let node = BvhNode::new_list(world);
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    world = HittableList::new_arg(vc);
 
     cam.render(&mut world);
 }
@@ -226,6 +241,11 @@ pub fn quads() {
     cam.background  = Color::new_arg(0.70, 0.80, 1.00);
     cam.defocus_angle = 0.0;
 
+    // bvh
+    let node = BvhNode::new_list(world);
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    world = HittableList::new_arg(vc);
+
     cam.render(&mut world);
 }
 
@@ -254,6 +274,11 @@ pub fn simple_light() {
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
 
     cam.defocus_angle = 0.0;
+
+    // bvh
+    let node = BvhNode::new_list(world);
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    world = HittableList::new_arg(vc);
 
     cam.render(&mut world);
 }
@@ -298,6 +323,11 @@ pub fn cornell_box() {
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
 
     cam.defocus_angle = 0.0;
+
+    // bvh
+    let node = BvhNode::new_list(world);
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    world = HittableList::new_arg(vc);
 
     cam.render(&mut world);
 }
@@ -345,6 +375,11 @@ pub fn cornell_smoke(){
     cam.vup      = Rvec3::new_arg(0.0,1.0,0.0);
 
     cam.defocus_angle = 0.0;
+
+    // bvh
+    let node = BvhNode::new_list(world);
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    world = HittableList::new_arg(vc);
 
     cam.render(&mut world);
 }
@@ -425,15 +460,18 @@ pub fn final_scene(image_width : i32, samples_per_pixel : i32, max_depth : i32) 
 
     cam.defocus_angle = 0.0;
 
+    // bvh
+    let node = BvhNode::new_list(world);
+    let vc : Vec<Rc<RefCell<dyn Hittable>>> = vec![Rc::new(RefCell::new(node))];
+    world = HittableList::new_arg(vc);
+
+
     cam.render(&mut world);
 }
 
-
-
-
 pub fn main(){
-    env::set_var("RUST_BACKTRACE", "full");
-    match 1 {
+    //env::set_var("RUST_BACKTRACE", "full");
+    match 7 {
         1 => random_spheres(),
         2 => two_spheres(),
         3 => earth(),

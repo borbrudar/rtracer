@@ -48,7 +48,7 @@ impl BvhNode {
         
             let mid = start + object_span/2;
             lft = Rc::new(RefCell::new(BvhNode::new(objects,start,mid)));
-            rght = Rc::new(RefCell::new(BvhNode::new(objects,mid+1,end))); 
+            rght = Rc::new(RefCell::new(BvhNode::new(objects,mid,end))); 
         }
 
         let bbbox = AABB::new_boxes(lft.as_ref().borrow().bounding_box(), rght.as_ref().borrow().bounding_box());
