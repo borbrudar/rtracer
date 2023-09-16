@@ -6,6 +6,7 @@ use crate::utility::*;
 use std::cmp::Ordering;
 use std::rc::Rc;
 use std::cell::RefCell;
+use crate::interval::*;
 
 pub struct BvhNode{
     bbox : AABB,    
@@ -15,8 +16,8 @@ pub struct BvhNode{
 
 
 impl BvhNode {
-    pub fn new(src_objects : &mut Vec<Rc<RefCell<dyn Hittable>>>, start : i32, end : i32) -> Self{
-        let mut objects = src_objects.to_owned(); // Create a modifiable array of the source scene objects
+    pub fn new(objects : &mut Vec<Rc<RefCell<dyn Hittable>>>, start : i32, end : i32) -> Self{
+        //let mut objects = src_objects.clone(); // Create a modifiable array of the source scene objects
 
         let axis = random_int(0,2);
 
@@ -46,11 +47,11 @@ impl BvhNode {
             objects.sort_by(comparator);
         
             let mid = start + object_span/2;
-            lft = Rc::new(RefCell::new(BvhNode::new(&mut objects,start,mid)));
-            rght = Rc::new(RefCell::new(BvhNode::new(&mut objects,mid+1,end))); 
+            lft = Rc::new(RefCell::new(BvhNode::new(objects,start,mid)));
+            rght = Rc::new(RefCell::new(BvhNode::new(objects,mid+1,end))); 
         }
 
-        let bbbox = AABB::new_boxes(lft.borrow_mut().bounding_box(), rght.borrow_mut().bounding_box());
+        let bbbox = AABB::new_boxes(lft.as_ref().borrow().bounding_box(), rght.as_ref().borrow().bounding_box());
           
         Self { bbox: bbbox, _left: lft, _right: rght }
     }
@@ -85,8 +86,7 @@ impl BvhNode {
 }
 
 impl Hittable for BvhNode{
-    fn hit(&mut self, _ray: &mut crate::ray::Ray, _ray_t : &mut crate::interval::Interval, _rec: &mut HitRecord) -> bool {
-        /*
+    fn hit(&mut self, ray: &mut crate::ray::Ray, ray_t : &mut crate::interval::Interval, rec: &mut HitRecord) -> bool {
         if !self.bbox.hit(ray,*ray_t) {
             return false;
         }
@@ -98,8 +98,6 @@ impl Hittable for BvhNode{
         let hit__right = self._right.borrow_mut().hit(ray, &mut Interval::new_arg(ray_t.min, mx), rec);
         
         hit__left || hit__right
-        */
-        todo!("broke it lmao")
     }
 
     fn bounding_box(&self) -> AABB {

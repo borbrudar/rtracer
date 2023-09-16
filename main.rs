@@ -432,8 +432,8 @@ pub fn final_scene(image_width : i32, samples_per_pixel : i32, max_depth : i32) 
 
 
 pub fn main(){
-    env::set_var("RUST_BACKTRACE", "1");
-    match 0 {
+    env::set_var("RUST_BACKTRACE", "full");
+    match 1 {
         1 => random_spheres(),
         2 => two_spheres(),
         3 => earth(),
