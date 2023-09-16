@@ -3,15 +3,15 @@ use crate::ray::*;
 use crate::color::*;
 use crate::utility::random_double;
 use crate::rvec3::*;
-use std::borrow::BorrowMut;
+
 use std::rc::Rc;
 use crate::texture::*;
 use crate::perlin::*;
 
 pub trait Material{
     fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool;
-    fn emitted(&mut self, u : f64, v : f64, p : &Point3) -> Color {
-        return Color::new();
+    fn emitted(&mut self, _u : f64, _v : f64, _p : &Point3) -> Color {
+        Color::new()
     }
 }
 
@@ -163,7 +163,7 @@ impl DiffuseLight{
 }
 
 impl Material for DiffuseLight{
-    fn scatter(&mut self,r_in : &mut Ray, rec : &HitRecord, attenuation : &mut Color, scattered : &mut Ray) -> bool {
+    fn scatter(&mut self,_r_in : &mut Ray, _rec : &HitRecord, _attenuation : &mut Color, _scattered : &mut Ray) -> bool {
         false
     }
     fn emitted(&mut self, u : f64, v : f64, p : &Point3) -> Color {

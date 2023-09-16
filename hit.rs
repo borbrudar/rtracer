@@ -1,4 +1,4 @@
-use rand::random;
+
 
 use crate::rvec3::*;
 use crate::Ray;
@@ -9,8 +9,8 @@ use crate::utility::INFINITY;
 use crate::utility::degrees_to_radians;
 use crate::utility::random_double;
 use std::borrow::BorrowMut;
-use std::cell::Ref;
-use std::convert::Infallible;
+
+
 use std::rc::Rc;
 use crate::color::*;
 use std::cell::RefCell;
@@ -75,7 +75,7 @@ impl Translate{
         Self { 
             object : p.clone(),
             offset : displacement,
-            bbox : p.borrow().bounding_box().clone() + displacement
+            bbox : p.borrow().bounding_box() + displacement
         }
     }
 }
@@ -152,8 +152,8 @@ impl Hittable for RotateY{
 
     fn hit(&mut self, r: &mut Ray, ray_t : &mut Interval, rec: &mut HitRecord) -> bool {
         // Change the ray from world space to object space
-        let mut origin = r.origin().clone();
-        let mut direction = r.direction().clone();
+        let mut origin = r.origin();
+        let mut direction = r.direction();
 
         origin[0] = self.cos_theta * r.origin()[0] - self.sin_theta * r.origin()[2];
         origin[2] = self.sin_theta * r.origin()[0] + self.cos_theta * r.origin()[2];
@@ -169,13 +169,13 @@ impl Hittable for RotateY{
         } 
         
         // Change the intersection point from object space to world space
-        let mut p = rec.p.clone();
+        let mut p = rec.p;
         p[0] =  self.cos_theta * rec.p[0] + self.sin_theta * rec.p[2];
         p[2] = -self.sin_theta * rec.p[0] + self.cos_theta * rec.p[2];
 
 
         // Change the normal from object space to world space
-        let mut normal = rec.normal.clone();
+        let mut normal = rec.normal;
         normal[0] =  self.cos_theta * rec.normal[0] + self.sin_theta * rec.normal[2];
         normal[2] = -self.sin_theta * rec.normal[0] + self.cos_theta * rec.normal[2];
 

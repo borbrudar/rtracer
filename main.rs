@@ -32,10 +32,10 @@ use camera::*;
 use material::*;
 use utility::random_double;
 use utility::random_range;
-use std::cell::Ref;
+
 use std::rc::Rc;
 use std::cell::RefCell;
-use std::env;
+
 use crate::bvh::*;
 use crate::texture::*;
 use crate::quad::*;
@@ -158,7 +158,7 @@ pub fn earth() {
     let globe = Rc::new(RefCell::new(Sphere::new(Point3::new(), 2.0, earth_surface)));
 
     let mut cam = Camera::new();
-    let mut world : Vec<Rc<RefCell<dyn Hittable>>> = vec![globe];
+    let world : Vec<Rc<RefCell<dyn Hittable>>> = vec![globe];
 
     cam.aspect_ratio      = 16.0 / 9.0;
     cam.image_width       = 1200;
@@ -439,7 +439,7 @@ pub fn final_scene(image_width : i32, samples_per_pixel : i32, max_depth : i32) 
     let mut boxes2 = HittableList::new();
     let white = Rc::new(RefCell::new(Lambertian::new(Color::new_arg(0.73, 0.73, 0.73))));
     let ns = 1000;
-    for j in 0..ns{
+    for _j in 0..ns{
         boxes2.add(Rc::new(RefCell::new(Sphere::new(Point3::random_vec_range(0.0, 165.0), 10.0 ,white.clone() ))));
     }
 
