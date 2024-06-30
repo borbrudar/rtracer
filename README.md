@@ -10,7 +10,7 @@ Run
 
 to render a scene and save it into img.ppm. 
 Some renders are available in the save directory. 
-Running in release is preffered.
+Running in release is preferred.
 
 ## Examples
 
